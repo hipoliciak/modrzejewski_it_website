@@ -48,7 +48,7 @@ const latestPosts = allPosts
             tags={project.data.tags}
             github={project.data.github}
             demo={project.data.demo}
-            slug={project.slug}
+            slug={project.id.replace(/\.(md|mdx)$/, '')}
           />
         ))}
       </div>
@@ -84,7 +84,7 @@ const latestPosts = allPosts
             pubDate={post.data.pubDate}
             category={post.data.category}
             tags={post.data.tags}
-            slug={post.slug}
+            slug={post.id.replace(/\.(md|mdx)$/, '')}
           />
         ))}
       </div>
