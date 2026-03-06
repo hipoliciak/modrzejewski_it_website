@@ -1,1 +1,0 @@
-const t=document.getElementById("theme-toggle");t?.addEventListener("click",()=>{const e=document.documentElement.classList.toggle("dark");localStorage.setItem("theme",e?"dark":"light")});const n=document.getElementById("mobile-menu-btn"),l=document.getElementById("mobile-menu");n?.addEventListener("click",()=>{l?.classList.toggle("hidden")});
