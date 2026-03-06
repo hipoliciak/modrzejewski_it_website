@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const latestPosts = allPosts
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+---
+
+<Layout title="Home" description="Salesforce Solution Architect - Portfolio and Blog by John Doe">
+  <Hero />
+
+  <!-- Featured Projects -->
+  <section id="featured-projects" class="py-20 bg-brand-lightgray dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="h-1 w-8 bg-brand-red rounded-full"></div>
+            <span class="text-brand-gray dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Work</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">
+            Featured Projects
+          </h2>
+        </div>
+        <a href="/#featured-projects" class="hidden sm:flex items-center gap-1 text-brand-navy dark:text-blue-400 font-medium hover:gap-2 transition-all duration-200">
+          All projects
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {featuredProjects.map((project) => (
+          <ProjectCard
+            title={project.data.title}
+            description={project.data.description}
+            tags={project.data.tags}
+            github={project.data.github}
+            demo={project.data.demo}
+            slug={project.id.replace(/\.(md|mdx)$/, '')}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Blog Posts -->
+  <section class="py-20 bg-white dark:bg-brand-darkbg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-12">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="h-1 w-8 bg-brand-red rounded-full"></div>
+            <span class="text-brand-gray dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Insights</span>
+          </div>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">
+            Latest Articles
+          </h2>
+        </div>
+        <a href="/blog" class="hidden sm:flex items-center gap-1 text-brand-navy dark:text-blue-400 font-medium hover:gap-2 transition-all duration-200">
+          All articles
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {latestPosts.map((post) => (
+          <BlogCard
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            category={post.data.category}
+            tags={post.data.tags}
+            slug={post.id.replace(/\.(md|mdx)$/, '')}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
