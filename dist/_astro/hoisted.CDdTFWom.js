@@ -1,0 +1,1 @@
+import"./hoisted.wJBdvDYF.js";const e=document.getElementById("contact-form"),s=document.getElementById("form-success");e?.addEventListener("submit",t=>{t.preventDefault(),e.classList.add("hidden"),s?.classList.remove("hidden")});

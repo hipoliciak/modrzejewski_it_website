@@ -1,0 +1,79 @@
+{
+  "name": "John Doe",
+  "title": "Salesforce Solution Architect",
+  "email": "john.doe@example.com",
+  "linkedin": "https://linkedin.com/in/johndoe",
+  "github": "https://github.com/johndoe",
+  "location": "New York, NY",
+  "summary": "Results-driven Salesforce Solution Architect with 10+ years of experience designing and implementing enterprise-scale CRM solutions. Certified across the Salesforce platform with deep expertise in Sales Cloud, Service Cloud, CPQ, and integration architecture using MuleSoft and REST APIs. Proven track record of delivering complex multi-cloud implementations for Fortune 500 companies.",
+  "experience": [
+    {
+      "title": "Senior Salesforce Solution Architect",
+      "company": "Accenture",
+      "location": "New York, NY",
+      "startDate": "2020-01",
+      "endDate": null,
+      "current": true,
+      "description": "Lead architect for enterprise Salesforce implementations across financial services and healthcare verticals.",
+      "highlights": [
+        "Designed and delivered a multi-org Salesforce architecture serving 5,000+ users across 12 business units",
+        "Architected MuleSoft-based integration layer connecting Salesforce with SAP ERP, resulting in 40% reduction in data sync time",
+        "Led a CPQ implementation that reduced quote-to-cash cycle by 60%",
+        "Mentored a team of 8 junior developers and administrators"
+      ]
+    },
+    {
+      "title": "Salesforce Technical Lead",
+      "company": "Deloitte Digital",
+      "location": "Chicago, IL",
+      "startDate": "2016-06",
+      "endDate": "2019-12",
+      "current": false,
+      "description": "Technical lead for Salesforce Service Cloud and Sales Cloud implementations.",
+      "highlights": [
+        "Delivered 12 full-cycle Salesforce implementations for mid-to-large enterprise clients",
+        "Built custom Lightning Web Components library used across 5 client projects",
+        "Designed RESTful API integration patterns for Salesforce-to-ERP connectivity",
+        "Achieved 98% client satisfaction rating across all project deliverables"
+      ]
+    },
+    {
+      "title": "Salesforce Developer",
+      "company": "Cognizant Technology Solutions",
+      "location": "Austin, TX",
+      "startDate": "2013-08",
+      "endDate": "2016-05",
+      "current": false,
+      "description": "Salesforce developer focused on Apex, Visualforce, and process automation.",
+      "highlights": [
+        "Developed complex Apex trigger frameworks for bulk data processing",
+        "Implemented Salesforce Communities portals for B2B partner management",
+        "Created automated testing frameworks using Apex test classes achieving 85%+ coverage",
+        "Migrated legacy on-premise CRM to Salesforce, moving 2M+ records"
+      ]
+    }
+  ],
+  "skills": {
+    "salesforce": ["Sales Cloud", "Service Cloud", "CPQ (Steelbrick)", "Experience Cloud", "Marketing Cloud", "Apex", "Lightning Web Components", "Visualforce", "SOQL/SOSL", "Flow Builder", "Process Builder"],
+    "integration": ["MuleSoft Anypoint Platform", "REST APIs", "SOAP APIs", "Boomi", "Kafka", "OAuth 2.0", "JWT"],
+    "architecture": ["Enterprise Architecture", "Solution Design", "Data Modeling", "Multi-org Strategy", "Microservices", "Event-Driven Architecture"],
+    "tools": ["GitHub", "Jira", "Confluence", "VS Code", "Salesforce CLI", "Postman", "DataLoader"]
+  },
+  "education": [
+    {
+      "degree": "Bachelor of Science in Computer Science",
+      "institution": "University of Texas at Austin",
+      "year": "2013"
+    }
+  ],
+  "certifications": [
+    { "name": "Salesforce Certified Technical Architect (CTA)", "year": "2021" },
+    { "name": "Salesforce Certified Application Architect", "year": "2020" },
+    { "name": "Salesforce Certified System Architect", "year": "2020" },
+    { "name": "Salesforce Certified Platform Developer II", "year": "2019" },
+    { "name": "Salesforce Certified Integration Architect", "year": "2019" },
+    { "name": "MuleSoft Certified Integration Architect", "year": "2020" },
+    { "name": "Salesforce Certified Sales Cloud Consultant", "year": "2017" },
+    { "name": "Salesforce Certified Service Cloud Consultant", "year": "2017" }
+  ]
+}

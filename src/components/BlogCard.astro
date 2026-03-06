@@ -1,0 +1,55 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  category: string;
+  tags: string[];
+  slug: string;
+}
+
+const { title, description, pubDate, category, tags, slug } = Astro.props;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<article class="group bg-white dark:bg-brand-darkcard rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:border-brand-navy dark:hover:border-blue-500 transition-all duration-300 hover:-translate-y-1">
+  <a href={`/blog/${slug}`} class="block p-6">
+    <div class="flex items-center justify-between mb-3">
+      <span class="inline-block bg-brand-navy/10 dark:bg-blue-500/20 text-brand-navy dark:text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full">
+        {category}
+      </span>
+      <time datetime={pubDate.toISOString()} class="text-xs text-gray-500 dark:text-gray-400">
+        {formattedDate}
+      </time>
+    </div>
+
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-brand-navy dark:group-hover:text-blue-400 transition-colors leading-snug">
+      {title}
+    </h3>
+
+    <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4 line-clamp-3">
+      {description}
+    </p>
+
+    <div class="flex items-center justify-between">
+      <div class="flex flex-wrap gap-1">
+        {tags.slice(0, 3).map((tag) => (
+          <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded">
+            #{tag}
+          </span>
+        ))}
+      </div>
+      <span class="text-brand-navy dark:text-blue-400 text-sm font-medium group-hover:translate-x-1 transition-transform duration-200 flex items-center gap-1">
+        Read more
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </span>
+    </div>
+  </a>
+</article>
