@@ -3,64 +3,37 @@ import Layout from '../layouts/Layout.astro';
 import ContactForm from '../components/ContactForm.astro';
 ---
 
-<Layout title="Contact" description="Get in touch with John Doe, Salesforce Solution Architect.">
+<Layout title="Contact" description="Let's talk about Salesforce B2C architecture, MarTech, and enterprise customer data platforms.">
   <!-- Header -->
   <div class="bg-gradient-to-br from-brand-navy to-blue-900 text-white py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-1 w-8 bg-brand-red rounded-full"></div>
-        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Get In Touch</span>
+        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Contact</span>
       </div>
-      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Contact</h1>
+      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Let's Talk</h1>
       <p class="text-blue-200 text-lg max-w-2xl">
-        Have a project in mind or want to discuss Salesforce architecture? Let's connect.
+        I'm available for architecture consulting, advisory work, and speaking engagements focused on Salesforce B2C, MarTech, and enterprise customer data platforms.
       </p>
     </div>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-      <!-- Contact Info -->
-      <div class="space-y-6">
-        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Let's Talk</h2>
-        <p class="text-gray-600 dark:text-gray-300">
-          I'm available for freelance consulting, full-time opportunities, and speaking engagements
-          related to Salesforce architecture and enterprise CRM.
-        </p>
-
-        <div class="space-y-4">
-          {[
-            {
-              label: 'Email',
-              value: 'john.doe@example.com',
-              href: 'mailto:john.doe@example.com',
-              icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-            },
-            {
-              label: 'LinkedIn',
-              value: 'linkedin.com/in/johndoe',
-              href: 'https://linkedin.com/in/johndoe',
-              icon: 'M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14',
-            },
-          ].map(({ label, value, href, icon }) => (
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-brand-navy/10 dark:bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-brand-navy dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={icon} />
-                </svg>
-              </div>
-              <div>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-                <a href={href} class="text-sm font-medium text-brand-navy dark:text-blue-400 hover:underline">{value}</a>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+      <div class="lg:col-span-7">
+        <ContactForm />
       </div>
 
-      <!-- Contact Form -->
-      <div class="lg:col-span-2">
-        <ContactForm />
+      <div class="relative lg:col-span-5 max-w-lg lg:max-w-md w-full mx-auto lg:mx-0 lg:ml-auto">
+        <div class="absolute -inset-2 rounded-3xl bg-gradient-to-br from-cyan-200/40 via-blue-300/30 to-brand-red/30 blur-xl dark:from-cyan-400/10 dark:via-blue-400/10 dark:to-brand-red/20"></div>
+        <div class="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-xl bg-white dark:bg-slate-900">
+          <img
+            src="/images/Dominik_Einstein.jpg"
+            alt="Dominik Modrzejewski portrait"
+            class="w-full h-auto object-cover"
+            loading="lazy"
+          />
+        </div>
       </div>
     </div>
   </div>

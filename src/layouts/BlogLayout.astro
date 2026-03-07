@@ -25,6 +25,13 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric',
 });
+
+const displayUpdatedDate = updatedDate ?? pubDate;
+const formattedDisplayUpdatedDate = displayUpdatedDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 ---
 
 <Layout title={title} description={description} image={image} type="article">
@@ -50,19 +57,17 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
+          Created: <time datetime={pubDate.toISOString()}>{formattedPubDate}</time>
         </span>
-        {updatedDate && (
-          <span class="text-gray-400 dark:text-gray-500">
-            Updated: <time datetime={updatedDate.toISOString()}>{formattedUpdatedDate}</time>
-          </span>
-        )}
+        <span class="text-gray-400 dark:text-gray-500">
+          Updated: <time datetime={displayUpdatedDate.toISOString()}>{formattedDisplayUpdatedDate}</time>
+        </span>
       </div>
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-2 mt-4">
           {tags.map((tag) => (
-            <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-3 py-1 rounded-full">
-              #{tag}
+            <span class="text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-slate-600 px-3 py-1 rounded-full">
+              {tag}
             </span>
           ))}
         </div>
@@ -75,22 +80,105 @@ const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
   </article>
 
   <!-- Mermaid.js support -->
-  <script type="module">
-    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-      securityLevel: 'loose',
-    });
-    // Re-render if theme changes
-    const observer = new MutationObserver(() => {
+  <script>
+    import mermaid from 'mermaid';
+    let isRendering = false;
+    let hasQueuedRender = false;
+
+    const getTheme = () => (
+      document.documentElement.classList.contains('dark') ? 'dark' : 'default'
+    );
+
+    // Convert markdown fences (```mermaid) into Mermaid containers.
+    const convertCodeFences = () => {
+      const candidates = [
+        ...document.querySelectorAll('pre[data-language="mermaid"]'),
+        ...document.querySelectorAll('code.language-mermaid'),
+      ];
+
+      candidates.forEach((candidate) => {
+        const preEl = candidate.tagName === 'PRE' ? candidate : candidate.closest('pre');
+        if (!preEl) return;
+        if (preEl.getAttribute('data-mermaid-converted') === 'true') return;
+
+        const definition = preEl.textContent?.trim();
+        if (!definition) return;
+
+        const mermaidEl = document.createElement('div');
+        mermaidEl.className = 'mermaid';
+        mermaidEl.setAttribute('data-mermaid-definition', definition);
+        mermaidEl.textContent = definition;
+        preEl.setAttribute('data-mermaid-converted', 'true');
+        preEl.replaceWith(mermaidEl);
+      });
+    };
+
+    // Restore source text so Mermaid can re-render when the theme changes.
+    const resetRenderedDiagrams = () => {
+      document.querySelectorAll('.mermaid').forEach((mermaidEl) => {
+        const definition = mermaidEl.getAttribute('data-mermaid-definition');
+        if (!definition) return;
+        mermaidEl.removeAttribute('data-processed');
+        mermaidEl.innerHTML = '';
+        mermaidEl.textContent = definition;
+      });
+    };
+
+    const renderMermaid = async () => {
+      convertCodeFences();
+      const diagrams = document.querySelectorAll('.mermaid');
+      if (diagrams.length === 0) return;
+
       mermaid.initialize({
         startOnLoad: false,
-        theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+        theme: getTheme(),
         securityLevel: 'loose',
       });
-      mermaid.run();
+      await mermaid.run({ querySelector: '.mermaid' });
+    };
+
+    const initMermaid = async () => {
+      if (isRendering) {
+        hasQueuedRender = true;
+        return;
+      }
+
+      isRendering = true;
+      try {
+        await renderMermaid();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const isKnownTransientError = message.includes('Could not find a suitable point for the given distance');
+        if (!isKnownTransientError) {
+          console.warn('Mermaid render warning:', error);
+        }
+      } finally {
+        isRendering = false;
+        if (hasQueuedRender) {
+          hasQueuedRender = false;
+          void initMermaid();
+        }
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMermaid, { once: true });
+    } else {
+      void initMermaid();
+    }
+
+    document.addEventListener('astro:page-load', () => {
+      void initMermaid();
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    const observer = new MutationObserver(() => {
+      resetRenderedDiagrams();
+      void initMermaid();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
   </script>
 </Layout>

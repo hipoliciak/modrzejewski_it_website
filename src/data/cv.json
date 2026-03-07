@@ -1,79 +1,186 @@
 {
-  "name": "John Doe",
-  "title": "Salesforce Solution Architect",
-  "email": "john.doe@example.com",
-  "linkedin": "https://linkedin.com/in/johndoe",
-  "github": "https://github.com/johndoe",
-  "location": "New York, NY",
-  "summary": "Results-driven Salesforce Solution Architect with 10+ years of experience designing and implementing enterprise-scale CRM solutions. Certified across the Salesforce platform with deep expertise in Sales Cloud, Service Cloud, CPQ, and integration architecture using MuleSoft and REST APIs. Proven track record of delivering complex multi-cloud implementations for Fortune 500 companies.",
+  "name": "Dominik Modrzejewski",
+  "title": "Salesforce B2C Solution Architect",
+  "email": "dominik.hipolit.modrzejewski@gmail.com",
+  "linkedin": "https://www.linkedin.com/in/dominikmodrzejewski/",
+  "trailhead": "https://www.salesforce.com/trailblazer/dominikmodrzejewski",
+  "github": "https://github.com/hipoliciak/",
+  "location": "Warsaw, Poland",
+  "summary": "Salesforce-certified B2C Solution Architect with 15+ years of experience driving MarTech and digital transformation across fintech, gaming, and e-commerce. Delivers scalable customer data and activation architectures across Salesforce Data 360, Marketing Cloud, and core Salesforce platform, with deep expertise in enterprise integrations and governed data layers.",
   "experience": [
     {
-      "title": "Senior Salesforce Solution Architect",
-      "company": "Accenture",
-      "location": "New York, NY",
-      "startDate": "2020-01-01",
+      "title": "Salesforce Data 360 Architect",
+      "company": "PwC",
+      "location": "Poland",
+      "startDate": "2025-04",
       "endDate": null,
       "current": true,
-      "description": "Lead architect for enterprise Salesforce implementations across financial services and healthcare verticals.",
+      "description": "Designed and delivered enterprise CDP and data activation solutions across Salesforce Data Cloud, Marketing Cloud, and Salesforce CRM for retail and e-commerce clients.",
       "highlights": [
-        "Designed and delivered a multi-org Salesforce architecture serving 5,000+ users across 12 business units",
-        "Architected MuleSoft-based integration layer connecting Salesforce with SAP ERP, resulting in 40% reduction in data sync time",
-        "Led a CPQ implementation that reduced quote-to-cash cycle by 60%",
-        "Mentored a team of 8 junior developers and administrators"
+        "Designed a scalable enterprise CDP solution unifying about 60M customer records in Salesforce Data Cloud",
+        "Integrated Databricks, SAP, Salesforce CRM, and Marketing Cloud into a governed activation architecture",
+        "Defined atomic to aggregate to CRM-ready data layers for analytics and personalization",
+        "Led a cross-functional delivery team of 5 to drive implementation and adoption"
       ]
     },
     {
-      "title": "Salesforce Technical Lead",
-      "company": "Deloitte Digital",
-      "location": "Chicago, IL",
-      "startDate": "2016-06-01",
-      "endDate": "2019-12-31",
+      "title": "Salesforce Solution Architect",
+      "company": "Totalizator Sportowy",
+      "location": "Poland",
+      "startDate": "2023-03",
+      "endDate": "2025-03",
       "current": false,
-      "description": "Technical lead for Salesforce Service Cloud and Sales Cloud implementations.",
+      "description": "Architected and delivered MarTech capabilities spanning Service Cloud, Marketing Cloud Engagement, Marketing Cloud Personalization, and Data Cloud across retail and digital channels.",
       "highlights": [
-        "Delivered 12 full-cycle Salesforce implementations for mid-to-large enterprise clients",
-        "Built custom Lightning Web Components library used across 5 client projects",
-        "Designed RESTful API integration patterns for Salesforce-to-ERP connectivity",
-        "Achieved 98% client satisfaction rating across all project deliverables"
+        "Built the Salesforce foundation for both e-commerce and retail channels",
+        "Implemented zero-copy federation between Snowflake and Salesforce Data Cloud for about 4M customers",
+        "Defined data models and API integrations enabling a unified customer view and cross-channel activation",
+        "Supported launch of a loyalty program on Salesforce Loyalty Cloud, reaching about 20% penetration in year one",
+        "Directed a cross-functional team of 4 to deliver scalable and compliant solutions"
       ]
     },
     {
-      "title": "Salesforce Developer",
-      "company": "Cognizant Technology Solutions",
-      "location": "Austin, TX",
-      "startDate": "2013-08-01",
-      "endDate": "2016-05-31",
+      "title": "Digital Transformation Consultant and Lead",
+      "company": "GOG (CD Projekt Group), PayPal, MCI Capital, others",
+      "location": "International",
+      "startDate": "2016-06",
+      "endDate": "2023-01",
       "current": false,
-      "description": "Salesforce developer focused on Apex, Visualforce, and process automation.",
+      "description": "Advised leadership teams and delivered digital transformation initiatives across fintech, e-commerce, and online services.",
       "highlights": [
-        "Developed complex Apex trigger frameworks for bulk data processing",
-        "Implemented Salesforce Communities portals for B2B partner management",
-        "Created automated testing frameworks using Apex test classes achieving 85%+ coverage",
-        "Migrated legacy on-premise CRM to Salesforce, moving 2M+ records"
+        "Advised C-level stakeholders across the US, UK, Poland, Germany, Russia, China, and France",
+        "Designed and delivered CRM and marketing automation programs using HubSpot and custom solutions",
+        "Supported customer bases from 1M to 10M+ users with omnichannel personalization and campaign automation",
+        "Led delivery teams ranging from small squads to 30+ members"
+      ]
+    },
+    {
+      "title": "Marketing and Communications Manager",
+      "company": "PKO BP",
+      "location": "Poland",
+      "startDate": "2010-09",
+      "endDate": "2016-05",
+      "current": false,
+      "description": "Led strategic marketing and digital initiatives in banking, working across product, IT, data, and sales teams.",
+      "highlights": [
+        "Drove go-to-market strategy for the IKO mobile banking app, reaching about 20% adoption of a 6.5M customer base at launch",
+        "Co-led rollout of the BLIK payment system, securing about 35% of Poland's payment acceptance network",
+        "Supported international expansion into Germany and the Czech Republic for enterprise clients",
+        "Supervised a dedicated marketing team and cross-functional collaboration"
       ]
     }
   ],
   "skills": {
-    "salesforce": ["Sales Cloud", "Service Cloud", "CPQ (Steelbrick)", "Experience Cloud", "Marketing Cloud", "Apex", "Lightning Web Components", "Visualforce", "SOQL/SOSL", "Flow Builder", "Process Builder"],
-    "integration": ["MuleSoft Anypoint Platform", "REST APIs", "SOAP APIs", "Boomi", "Kafka", "OAuth 2.0", "JWT"],
-    "architecture": ["Enterprise Architecture", "Solution Design", "Data Modeling", "Multi-org Strategy", "Microservices", "Event-Driven Architecture"],
-    "tools": ["GitHub", "Jira", "Confluence", "VS Code", "Salesforce CLI", "Postman", "DataLoader"]
+    "salesforce": [
+      "Salesforce Data 360",
+      "Salesforce B2C Solution Architecture",
+      "Service Cloud",
+      "Marketing Cloud Engagement",
+      "Marketing Cloud Personalization",
+      "Loyalty Cloud",
+      "Salesforce CRM"
+    ],
+    "integration": [
+      "Databricks",
+      "SAP",
+      "Snowflake",
+      "Zero-Copy Federation",
+      "API Integration",
+      "Enterprise Data Pipelines",
+      "Data Governance"
+    ],
+    "architecture": [
+      "MarTech Architecture",
+      "CDP Architecture",
+      "Omnichannel Activation",
+      "Personalization Strategy",
+      "Digital Transformation",
+      "Cross-Functional Delivery Leadership"
+    ],
+    "tools": [
+      "GitHub",
+      "Trailhead",
+      "HubSpot"
+    ]
   },
   "education": [
     {
-      "degree": "Bachelor of Science in Computer Science",
-      "institution": "University of Texas at Austin",
-      "year": "2013"
+      "degree": "Software Development",
+      "institution": "42 Warsaw",
+      "year": "2024-now"
+    },
+    {
+      "degree": "Diploma of IT",
+      "institution": "Strathfield College, Melbourne",
+      "year": "2017-2018"
+    },
+    {
+      "degree": "MSc in Economics",
+      "institution": "Warsaw School of Economics",
+      "year": "2008-2011"
+    },
+    {
+      "degree": "MSc in Law",
+      "institution": "University of Warsaw",
+      "year": "2002-2007"
     }
   ],
   "certifications": [
-    { "name": "Salesforce Certified Technical Architect (CTA)", "year": "2021" },
-    { "name": "Salesforce Certified Application Architect", "year": "2020" },
-    { "name": "Salesforce Certified System Architect", "year": "2020" },
-    { "name": "Salesforce Certified Platform Developer II", "year": "2019" },
-    { "name": "Salesforce Certified Integration Architect", "year": "2019" },
-    { "name": "MuleSoft Certified Integration Architect", "year": "2020" },
-    { "name": "Salesforce Certified Sales Cloud Consultant", "year": "2017" },
-    { "name": "Salesforce Certified Service Cloud Consultant", "year": "2017" }
+    {
+      "name": "Salesforce B2C Solution Architect",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Integration Architect",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Data Architect",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Sharing and Visibility Architect",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Data 360 Consultant",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Business Analyst",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Platform App Builder",
+      "year": ""
+    },
+    {
+      "name": "Salesforce Administrator",
+      "year": ""
+    },
+    {
+      "name": "Salesforce AI Specialist",
+      "year": ""
+    },
+    {
+      "name": "Marketing Cloud Consultant",
+      "year": ""
+    },
+    {
+      "name": "Marketing Cloud Email Specialist",
+      "year": ""
+    },
+    {
+      "name": "Marketing Cloud Personalization Accredited Professional",
+      "year": ""
+    },
+    {
+      "name": "Loyalty Management Accredited Professional",
+      "year": ""
+    },
+    {
+      "name": "IREB Requirements Engineer",
+      "year": ""
+    }
   ]
 }

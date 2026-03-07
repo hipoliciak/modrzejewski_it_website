@@ -9,6 +9,7 @@ interface Props {
 }
 
 const { title, description, tags, github, demo, slug } = Astro.props;
+const projectUrl = `/projects/${slug}`;
 ---
 
 <article class="group bg-white dark:bg-brand-darkcard rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:border-brand-navy dark:hover:border-blue-500 transition-all duration-300 hover:-translate-y-1">
@@ -38,14 +39,31 @@ const { title, description, tags, github, demo, slug } = Astro.props;
     </div>
   </div>
 
-  <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-brand-navy dark:group-hover:text-blue-400 transition-colors">
-    {title}
-  </h3>
-  <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
+  <a
+    href={projectUrl}
+    class="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy dark:focus-visible:ring-blue-400"
+    aria-label={`View details for ${title}`}
+  >
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-brand-navy dark:group-hover:text-blue-400 transition-colors">
+      {title}
+    </h3>
+    <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
+  </a>
+
+  <a
+    href={projectUrl}
+    class="inline-flex items-center gap-2 bg-brand-navy dark:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-red dark:hover:bg-brand-red transition-colors mb-4"
+    aria-label={`View details for ${title}`}
+  >
+    View details
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+  </a>
 
   <div class="flex flex-wrap gap-2">
     {tags.map((tag) => (
-      <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-md font-medium">
+      <span class="text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-slate-600 px-2.5 py-1 rounded-md">
         {tag}
       </span>
     ))}

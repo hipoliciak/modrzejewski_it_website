@@ -1,0 +1,70 @@
+---
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  tags: string[];
+  github?: string;
+  demo?: string;
+}
+
+const { title, description, tags, github, demo } = Astro.props;
+---
+
+<Layout title={title} description={description} type="article">
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <header class="mb-10">
+      <div class="mb-4">
+        <span class="inline-block bg-brand-navy text-white text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full">
+          Project Case Study
+        </span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
+        {title}
+      </h1>
+
+      <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">{description}</p>
+
+      {tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-6">
+          {tags.map((tag) => (
+            <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-medium">
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {(github || demo) && (
+        <div class="flex flex-wrap gap-3">
+          {github && (
+            <a
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              GitHub
+            </a>
+          )}
+          {demo && (
+            <a
+              href={demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              Live Link
+            </a>
+          )}
+        </div>
+      )}
+    </header>
+
+    <div class="prose prose-lg dark:prose-invert prose-headings:font-bold prose-a:text-brand-navy dark:prose-a:text-blue-400 max-w-none">
+      <slot />
+    </div>
+  </article>
+</Layout>

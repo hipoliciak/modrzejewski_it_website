@@ -9,79 +9,141 @@ const allProjects = await getCollection('projects');
 const featuredProjects = allProjects
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order);
+const showProjectArrows = featuredProjects.length > 3;
+const enableInfiniteProjects = featuredProjects.length > 3;
+const projectsForCarousel = enableInfiniteProjects
+  ? [...featuredProjects, ...featuredProjects, ...featuredProjects]
+  : featuredProjects;
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const latestPosts = allPosts
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
+const featuredPosts = allPosts
+  .filter((p) => p.data.featured)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+const homepagePosts = featuredPosts.length > 0 ? featuredPosts : latestPosts;
+
+const projectTileWidthClass = 'w-[88%] sm:w-[62%] lg:w-[calc(33.333%-0.67rem)]';
+const projectsTrackClass = showProjectArrows
+  ? 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
+  : 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
 ---
 
-<Layout title="Home" description="Salesforce Solution Architect - Portfolio and Blog by John Doe">
+<Layout
+  title="Home"
+  description="Salesforce B2C Solution Architect portfolio and blog by Dominik Modrzejewski."
+>
   <Hero />
 
-  <!-- Featured Projects -->
-  <section id="featured-projects" class="py-20 bg-brand-lightgray dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-12">
+  <!-- Delivered Projects -->
+  <section id="featured-projects" class="relative overflow-hidden pt-14 pb-12 bg-brand-lightgray dark:bg-gray-900">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-0">
+      <div class="absolute -top-24 -left-16 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl dark:bg-cyan-400/10"></div>
+      <div class="absolute top-20 -right-16 h-80 w-80 rounded-full bg-amber-200/35 blur-3xl dark:bg-amber-300/10"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-6">
         <div>
           <div class="flex items-center gap-2 mb-2">
             <div class="h-1 w-8 bg-brand-red rounded-full"></div>
             <span class="text-brand-gray dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Work</span>
           </div>
           <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">
-            Featured Projects
+            Delivered Projects
           </h2>
         </div>
-        <a href="/#featured-projects" class="hidden sm:flex items-center gap-1 text-brand-navy dark:text-blue-400 font-medium hover:gap-2 transition-all duration-200">
-          All projects
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {featuredProjects.map((project) => (
-          <ProjectCard
-            title={project.data.title}
-            description={project.data.description}
-            tags={project.data.tags}
-            github={project.data.github}
-            demo={project.data.demo}
-            slug={project.id.replace(/\.(md|mdx)$/, '')}
-          />
-        ))}
+      <div class="relative">
+        {showProjectArrows && (
+          <button
+            type="button"
+            id="projects-prev"
+            aria-label="Previous project"
+            class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+
+        <div
+          id="projects-carousel"
+          data-infinite={enableInfiniteProjects ? 'true' : 'false'}
+          data-set-size={featuredProjects.length}
+          class={projectsTrackClass}
+        >
+          {projectsForCarousel.map((project) => (
+            <div class:list={['snap-start shrink-0', projectTileWidthClass]}>
+              <ProjectCard
+                title={project.data.title}
+                description={project.data.description}
+                tags={project.data.tags}
+                github={project.data.github}
+                demo={project.data.demo}
+                slug={project.id.replace(/\.(md|mdx)$/, '')}
+              />
+            </div>
+          ))}
+        </div>
+
+        {showProjectArrows && (
+          <button
+            type="button"
+            id="projects-next"
+            aria-label="Next project"
+            class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   </section>
 
-  <!-- Latest Blog Posts -->
-  <section class="py-20 bg-white dark:bg-brand-darkbg">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-12">
+  <!-- Featured Articles -->
+  <section class="relative overflow-hidden pt-10 pb-14 bg-white dark:bg-brand-darkbg border-t-2 border-gray-200 dark:border-gray-700">
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-0">
+      <div class="absolute -bottom-20 -left-10 h-72 w-72 rounded-full bg-emerald-200/35 blur-3xl dark:bg-emerald-400/10"></div>
+      <div class="absolute top-8 right-0 h-72 w-72 rounded-full bg-orange-200/30 blur-3xl dark:bg-orange-300/10"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-6">
         <div>
           <div class="flex items-center gap-2 mb-2">
             <div class="h-1 w-8 bg-brand-red rounded-full"></div>
             <span class="text-brand-gray dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Insights</span>
           </div>
           <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">
-            Latest Articles
+            Featured Articles
           </h2>
         </div>
-        <a href="/blog" class="hidden sm:flex items-center gap-1 text-brand-navy dark:text-blue-400 font-medium hover:gap-2 transition-all duration-200">
-          All articles
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {latestPosts.map((post) => (
+      <div class="md:hidden flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        {homepagePosts.map((post) => (
+          <div class="snap-start shrink-0 w-[88%] sm:w-[62%]">
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              category={post.data.category}
+              tags={post.data.tags}
+              slug={post.id.replace(/\.(md|mdx)$/, '')}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {homepagePosts.map((post) => (
           <BlogCard
             title={post.data.title}
             description={post.data.description}
-            pubDate={post.data.pubDate}
             category={post.data.category}
             tags={post.data.tags}
             slug={post.id.replace(/\.(md|mdx)$/, '')}
@@ -90,4 +152,60 @@ const latestPosts = allPosts
       </div>
     </div>
   </section>
+
+  <script>
+    const carousel = document.getElementById('projects-carousel');
+    const enableInfiniteProjects = carousel?.getAttribute('data-infinite') === 'true';
+    const setSize = Number.parseInt(carousel?.getAttribute('data-set-size') || '0', 10);
+    const prevBtn = document.getElementById('projects-prev');
+    const nextBtn = document.getElementById('projects-next');
+
+    let cardStep = 360;
+    let setWidth = 0;
+
+    // With 3 repeated sets rendered server-side, keep viewport on middle set.
+    const setupInfiniteCarousel = () => {
+      if (!enableInfiniteProjects || !carousel || setSize < 2) return;
+
+      const cards = [...carousel.querySelectorAll(':scope > .snap-start')];
+      const firstCard = cards[0];
+      if (!firstCard) return;
+
+      const cardRect = firstCard.getBoundingClientRect();
+      const style = window.getComputedStyle(carousel);
+      const gap = Number.parseFloat(style.columnGap || style.gap || '16') || 16;
+
+      cardStep = cardRect.width + gap;
+      setWidth = cardStep * setSize;
+      carousel.scrollLeft = setWidth;
+    };
+
+    const getScrollStep = () => {
+      if (!carousel) return 360;
+      return cardStep;
+    };
+
+    const handleLoopEdges = () => {
+      if (!carousel || setWidth === 0) return;
+
+      if (carousel.scrollLeft <= setWidth * 0.5) {
+        carousel.scrollLeft += setWidth;
+      } else if (carousel.scrollLeft >= setWidth * 1.5) {
+        carousel.scrollLeft -= setWidth;
+      }
+    };
+
+    if (enableInfiniteProjects) {
+      setupInfiniteCarousel();
+      carousel?.addEventListener('scroll', handleLoopEdges, { passive: true });
+    }
+
+    prevBtn?.addEventListener('click', () => {
+      carousel?.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      carousel?.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+    });
+  </script>
 </Layout>

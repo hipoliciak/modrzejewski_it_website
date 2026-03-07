@@ -12,7 +12,7 @@ interface Props {
 
 const {
   title,
-  description = 'Salesforce Solution Architect - Portfolio and Blog',
+  description = 'Salesforce B2C Solution Architect portfolio and blog by Dominik Modrzejewski.',
   image,
   type,
 } = Astro.props;
@@ -36,7 +36,7 @@ const {
       }
     </script>
   </head>
-  <body class="bg-white dark:bg-brand-darkbg text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+  <body style="--trailhead-icon-scale: 160% 160%;" class="bg-white dark:bg-brand-darkbg text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow">
       <slot />

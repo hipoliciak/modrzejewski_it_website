@@ -1,20 +1,25 @@
 ---
+import cvData from '../data/cv.json';
+
+const contactEmail = cvData.email;
 ---
 
-<div class="max-w-2xl mx-auto">
-  <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-8">
-    <div class="flex items-start gap-3">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <p class="text-sm text-blue-700 dark:text-blue-300">
-        This form is designed for future backend integration. Currently, it demonstrates the UI/UX design.
-        To enable form submissions, connect a serverless function or form service (e.g., Netlify Forms, Formspree).
-      </p>
-    </div>
-  </div>
+<div class="w-full">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Me</h2>
 
-  <form id="contact-form" class="space-y-6" novalidate>
+  <form
+    id="contact-form"
+    class="space-y-6"
+    method="POST"
+    action={`https://formsubmit.co/${contactEmail}`}
+    novalidate
+  >
+    <input type="hidden" name="_subject" value="New website contact message" />
+    <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_next" value="https://modrzejewski.it/contact?sent=1" />
+    <input type="hidden" id="form-started-at" name="_form_started_at" value="" />
+    <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" />
+
     <div>
       <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
         Full Name <span class="text-brand-red">*</span>
@@ -72,6 +77,7 @@
 
     <button
       type="submit"
+      id="contact-submit"
       class="w-full bg-brand-navy hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -81,19 +87,77 @@
     </button>
   </form>
 
+  <div id="form-error" class="hidden mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300 text-sm">
+    Please wait a few seconds and retry. If this persists, contact me through LinkedIn.
+  </div>
+
   <div id="form-success" class="hidden mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-green-700 dark:text-green-300 text-sm">
     Thank you for your message! I'll get back to you soon.
   </div>
 </div>
 
 <script>
-  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const COOLDOWN_MS = 30000;
+  const LAST_SUBMIT_KEY = 'contactLastSubmitAt';
+  const params = new URLSearchParams(window.location.search);
+  const form = document.getElementById('contact-form');
+  const submitBtn = document.getElementById('contact-submit');
+  const startedAtInput = document.getElementById('form-started-at');
   const successMsg = document.getElementById('form-success');
+  const errorMsg = document.getElementById('form-error');
+
+  if (startedAtInput) {
+    startedAtInput.value = String(Date.now());
+  }
+
+  if (params.get('sent') === '1') {
+    localStorage.setItem(LAST_SUBMIT_KEY, String(Date.now()));
+    form?.classList.add('hidden');
+    successMsg?.classList.remove('hidden');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  const setLoading = (isLoading) => {
+    if (!submitBtn) return;
+    submitBtn.toggleAttribute('disabled', isLoading);
+    submitBtn.classList.toggle('opacity-70', isLoading);
+    submitBtn.classList.toggle('cursor-not-allowed', isLoading);
+    submitBtn.classList.toggle('hover:-translate-y-0.5', !isLoading);
+    submitBtn.innerHTML = isLoading
+      ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Sending...'
+      : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>Send Message';
+  };
 
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
-    // Future: submit to API endpoint here
-    form.classList.add('hidden');
-    successMsg?.classList.remove('hidden');
+
+    successMsg?.classList.add('hidden');
+    errorMsg?.classList.add('hidden');
+
+    const startedAt = Number.parseInt(startedAtInput?.value || '0', 10);
+    const elapsed = Date.now() - startedAt;
+
+    if (!startedAt || elapsed < 3500) {
+      if (errorMsg) {
+        errorMsg.textContent = 'Please wait a few seconds before sending the form.';
+        errorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    const lastSubmitAt = Number.parseInt(localStorage.getItem(LAST_SUBMIT_KEY) || '0', 10);
+    const cooldownLeft = COOLDOWN_MS - (Date.now() - lastSubmitAt);
+
+    if (lastSubmitAt && cooldownLeft > 0) {
+      const secondsLeft = Math.ceil(cooldownLeft / 1000);
+      if (errorMsg) {
+        errorMsg.textContent = `Please wait ${secondsLeft}s before sending another message.`;
+        errorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    setLoading(true);
+    form.submit();
   });
 </script>
