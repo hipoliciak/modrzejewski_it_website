@@ -1,7 +1,5 @@
 ---
-import cvData from '../data/cv.json';
-
-const contactEmail = cvData.email;
+const formSubmitToken = '4d3445045dd0d816e38d62d6aad3eb9c';
 ---
 
 <div class="w-full">
@@ -11,7 +9,7 @@ const contactEmail = cvData.email;
     id="contact-form"
     class="space-y-6"
     method="POST"
-    action={`https://formsubmit.co/${contactEmail}`}
+    action={`https://formsubmit.co/${formSubmitToken}`}
     novalidate
   >
     <input type="hidden" name="_subject" value="New website contact message" />
