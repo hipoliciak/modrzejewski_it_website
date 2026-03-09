@@ -2,11 +2,14 @@
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/blog', label: 'Blog' },
-  { href: '/cv', label: 'CV' },
+  { href: '/about-me', label: 'About Me' },
   { href: '/contact', label: 'Contact' },
 ];
 
 const currentPath = Astro.url.pathname;
+const normalizePath = (path: string) =>
+  path !== '/' && path.endsWith('/') ? path.slice(0, -1) : path;
+const normalizedCurrentPath = normalizePath(currentPath);
 ---
 
 <header class="sticky top-0 z-50 bg-white/90 dark:bg-brand-darkbg/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
@@ -24,19 +27,23 @@ const currentPath = Astro.url.pathname;
 
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center gap-1">
-        {navLinks.map(({ href, label }) => (
+        {navLinks.map(({ href, label }) => {
+          const isActive = normalizedCurrentPath === normalizePath(href);
+          return (
           <a
             href={href}
+            aria-current={isActive ? 'page' : undefined}
             class:list={[
               'px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200',
-              currentPath === href
+              isActive
                 ? 'bg-brand-navy text-white'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white',
             ]}
           >
             {label}
           </a>
-        ))}
+        );
+        })}
       </nav>
 
       <!-- Right side: Dark mode toggle + mobile menu -->
@@ -73,19 +80,23 @@ const currentPath = Astro.url.pathname;
     <!-- Mobile Navigation -->
     <div id="mobile-menu" class="md:hidden hidden pb-3">
       <nav class="flex flex-col gap-1">
-        {navLinks.map(({ href, label }) => (
+        {navLinks.map(({ href, label }) => {
+          const isActive = normalizedCurrentPath === normalizePath(href);
+          return (
           <a
             href={href}
+            aria-current={isActive ? 'page' : undefined}
             class:list={[
               'px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200',
-              currentPath === href
+              isActive
                 ? 'bg-brand-navy text-white'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
             ]}
           >
             {label}
           </a>
-        ))}
+        );
+        })}
       </nav>
     </div>
   </div>

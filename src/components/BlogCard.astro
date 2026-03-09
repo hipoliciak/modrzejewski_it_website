@@ -1,4 +1,6 @@
 ---
+import { tagToSlug } from '../utils/tags';
+
 interface Props {
   title: string;
   description: string;
@@ -39,9 +41,12 @@ const { title, description, category, tags, slug } = Astro.props;
 
   <div class="flex flex-wrap gap-2">
     {tags.slice(0, 3).map((tag) => (
-      <span class="text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-slate-600 px-2.5 py-1 rounded-md">
+      <a
+        href={`/tags/${tagToSlug(tag)}`}
+        class="text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-slate-600 px-2.5 py-1 rounded-md hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+      >
         {tag}
-      </span>
+      </a>
     ))}
   </div>
 </article>

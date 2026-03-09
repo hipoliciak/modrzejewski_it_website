@@ -1,0 +1,18 @@
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: *
+Allow: /
+
+Sitemap: https://modrzejewski.it/sitemap.xml
+# LLM index: https://modrzejewski.it/llms.txt
+# LLM extended index: https://modrzejewski.it/llms-full.txt

@@ -9,11 +9,15 @@ tags: ["Apex", "Salesforce", "Development", "Best Practices", "Triggers"]
 draft: false
 ---
 
-## Why Bulk-Safe Triggers Matter
+## Why do bulk-safe triggers matter in Salesforce?
+
+Bulk-safe triggers prevent governor limit failures when records are processed in large batches.
 
 Salesforce governor limits exist to ensure fair resource usage on the multi-tenant platform. A trigger that works perfectly for a single record can catastrophically fail during a data load of 10,000 records. Every Apex trigger **must** be designed to handle 200 records in a single execution context.
 
-## The Trigger Handler Framework
+## How should you structure Apex trigger logic?
+
+Use a trigger handler framework so trigger files stay thin and business logic remains testable and reusable.
 
 Avoid business logic directly in trigger files. Instead, use the handler pattern:
 
@@ -40,7 +44,9 @@ trigger OpportunityTrigger on Opportunity (
 }
 ```
 
-## The Handler Class
+## What should a trigger handler class do?
+
+A handler class should centralize validation, branching, and side effects while remaining bulk-safe.
 
 ```apex
 // OpportunityTriggerHandler.cls

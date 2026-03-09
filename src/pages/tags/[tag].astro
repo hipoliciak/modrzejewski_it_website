@@ -1,0 +1,133 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { tagToSlug } from '../../utils/tags';
+
+export async function getStaticPaths() {
+  const [blogPosts, projects] = await Promise.all([
+    getCollection('blog', ({ data }) => !data.draft),
+    getCollection('projects'),
+  ]);
+
+  const uniqueTags = new Set<string>([
+    ...blogPosts.flatMap((post) => post.data.tags),
+    ...projects.flatMap((project) => project.data.tags),
+  ]);
+
+  return [...uniqueTags].map((tag) => ({
+    params: { tag: tagToSlug(tag) },
+  }));
+}
+
+const { tag: tagSlug } = Astro.params;
+
+const [blogPosts, projects] = await Promise.all([
+  getCollection('blog', ({ data }) => !data.draft),
+  getCollection('projects'),
+]);
+
+const allTags = new Set<string>([
+  ...blogPosts.flatMap((post) => post.data.tags),
+  ...projects.flatMap((project) => project.data.tags),
+]);
+
+const selectedTag = [...allTags].find((tag) => tagToSlug(tag) === tagSlug) || tagSlug || '';
+const sortedAllTags = [...allTags].sort((a, b) => a.localeCompare(b));
+
+const taggedPosts = blogPosts.filter((post) =>
+  post.data.tags.some((tag) => tagToSlug(tag) === tagSlug)
+);
+
+const taggedProjects = projects.filter((project) =>
+  project.data.tags.some((tag) => tagToSlug(tag) === tagSlug)
+);
+---
+
+<Layout title={`Tag: ${selectedTag}`} description={`Content tagged with ${selectedTag}.`}>
+  <div class="relative overflow-hidden bg-[#060914] text-white py-16">
+    <div class="pointer-events-none absolute inset-0 opacity-35" style="background-image: linear-gradient(rgba(0, 255, 200, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 200, 0.08) 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,255,240,0.22),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(255,80,140,0.16),transparent_40%),radial-gradient(circle_at_60%_80%,rgba(86,140,255,0.2),transparent_50%)]"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="h-1 w-8 bg-brand-red rounded-full"></div>
+        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Tag</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold mb-3">{selectedTag}</h1>
+      <p class="text-blue-200 text-lg max-w-2xl">
+        {taggedPosts.length} blog post(s) and {taggedProjects.length} project(s) found.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12">
+    <section aria-labelledby="tag-navigation-heading">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <h2 id="tag-navigation-heading" class="text-2xl font-bold text-gray-900 dark:text-white">Filter by tag</h2>
+        <a href="/tags" class="text-sm font-medium text-brand-navy dark:text-blue-400 hover:underline">Clear filter</a>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {sortedAllTags.map((tag) => {
+          const isActive = tag === selectedTag;
+          return (
+            <a
+              href={`/tags/${tagToSlug(tag)}`}
+              aria-current={isActive ? 'page' : undefined}
+              class:list={[
+                'inline-flex items-center rounded-full border px-3 py-1.5 text-sm transition-colors',
+                isActive
+                  ? 'border-brand-navy dark:border-blue-500 bg-brand-navy dark:bg-blue-600 text-white'
+                  : 'border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600',
+              ]}
+            >
+              {tag}
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <section>
+      <div class="flex items-center justify-between mb-5">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Blog Posts</h2>
+        <a href="/tags" class="text-sm font-medium text-brand-navy dark:text-blue-400 hover:underline">All tags</a>
+      </div>
+      {taggedPosts.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {taggedPosts.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              category={post.data.category}
+              tags={post.data.tags}
+              slug={post.id.replace(/\.(md|mdx)$/, '')}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-600 dark:text-gray-300">No blog posts with this tag yet.</p>
+      )}
+    </section>
+
+    <section>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-5">Projects</h2>
+      {taggedProjects.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {taggedProjects.map((project) => (
+            <ProjectCard
+              title={project.data.title}
+              description={project.data.description}
+              tags={project.data.tags}
+              github={project.data.github}
+              demo={project.data.demo}
+              slug={project.id.replace(/\.(md|mdx)$/, '')}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-600 dark:text-gray-300">No projects with this tag yet.</p>
+      )}
+    </section>
+  </div>
+</Layout>

@@ -8,6 +8,7 @@ interface Props {
   description?: string;
   image?: string;
   type?: string;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 const {
@@ -15,7 +16,31 @@ const {
   description = 'Salesforce B2C Solution Architect portfolio and blog by Dominik Modrzejewski.',
   image,
   type,
+  structuredData,
 } = Astro.props;
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Dominik Modrzejewski',
+  url: 'https://modrzejewski.it/',
+  jobTitle: 'Salesforce Solution Architect',
+  sameAs: ['https://modrzejewski.it/'],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Modrzejewski.IT',
+  url: 'https://modrzejewski.it/',
+  inLanguage: 'en',
+};
+
+const inputSchemas = structuredData
+  ? (Array.isArray(structuredData) ? structuredData : [structuredData])
+  : [];
+
+const allStructuredData = [personSchema, websiteSchema, ...inputSchemas];
 ---
 
 <!doctype html>
@@ -27,7 +52,13 @@ const {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <SEO title={title} description={description} image={image} type={type} />
+    <SEO
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      structuredData={allStructuredData}
+    />
     <script is:inline>
       // Dark mode initialization - must run before page renders to avoid flash
       const theme = localStorage.getItem('theme');
@@ -36,7 +67,7 @@ const {
       }
     </script>
   </head>
-  <body style="--trailhead-icon-scale: 160% 160%;" class="bg-white dark:bg-brand-darkbg text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+  <body id="page-top" style="--trailhead-icon-scale: 160% 160%;" class="bg-white dark:bg-brand-darkbg text-gray-900 dark:text-gray-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
     <Header />
     <main class="flex-grow">
       <slot />

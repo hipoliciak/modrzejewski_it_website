@@ -1,0 +1,23 @@
+# Modrzejewski.IT - Portfolio and Technical Content
+> Salesforce Solution Architect focused on enterprise architecture, integration patterns, and CRM/data activation.
+
+## Key Sections
+- [Home](https://modrzejewski.it/): Profile overview and featured highlights.
+- [Blog](https://modrzejewski.it/blog): Visitor-oriented technical articles.
+- [Tags](https://modrzejewski.it/tags): Tag cloud with topic-based navigation.
+- [Blog Index (Machine)](https://modrzejewski.it/llm/blog): Plain links to all published blog posts.
+- [Project Index (Machine)](https://modrzejewski.it/llm/projects): Plain links to project case studies.
+- [About Me](https://modrzejewski.it/about-me): Experience and credentials.
+- [Contact](https://modrzejewski.it/contact): Contact form.
+
+## Tag Navigation Pattern
+- Tag detail pages follow: `https://modrzejewski.it/tags/<tag-slug>`
+- Example: `https://modrzejewski.it/tags/salesforce`
+
+## Content Focus
+- Salesforce architecture and delivery
+- Integration design and API patterns
+- Data platform activation and governance
+
+## Extended Index
+- [Detailed LLM Index](https://modrzejewski.it/llms-full.txt): Expanded metadata for blog posts and projects.

@@ -1,0 +1,51 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+const totalPosts = sortedPosts.length;
+const generatedAt = new Date();
+const generatedAtIso = generatedAt.toISOString();
+const generatedAtLabel = generatedAt.toLocaleString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short',
+});
+---
+
+<Layout title="Blog Index" description="Machine-readable blog index for language models and automated crawlers.">
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16" aria-labelledby="llm-blog-index-heading">
+    <h1 id="llm-blog-index-heading" class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
+      Blog Index
+    </h1>
+    <p class="text-gray-600 dark:text-gray-300 mb-8">
+      This page is optimized for machine-readable crawling and provides direct links to all blog posts.
+    </p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+      Published posts indexed: {totalPosts}
+    </p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+      Last generated: <time datetime={generatedAtIso}>{generatedAtLabel}</time>
+    </p>
+
+    <ol class="space-y-4">
+      {sortedPosts.map((post) => {
+        const slug = post.id.replace(/\.(md|mdx)$/, '');
+        return (
+          <li class="border-b border-slate-200 dark:border-slate-700 pb-4">
+            <a href={`/blog/${slug}`} class="font-semibold text-brand-navy dark:text-blue-400 underline">
+              {post.data.title}
+            </a>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{post.data.description}</p>
+          </li>
+        );
+      })}
+    </ol>
+  </section>
+</Layout>

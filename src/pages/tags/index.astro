@@ -1,0 +1,55 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { tagToSlug } from '../../utils/tags';
+
+const [blogPosts, projects] = await Promise.all([
+  getCollection('blog', ({ data }) => !data.draft),
+  getCollection('projects'),
+]);
+
+const allTags = [...blogPosts.flatMap((post) => post.data.tags), ...projects.flatMap((project) => project.data.tags)];
+const tagCounts = new Map<string, number>();
+
+for (const tag of allTags) {
+  tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+}
+
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const maxCount = sortedTags.length > 0 ? sortedTags[0][1] : 1;
+---
+
+<Layout title="Tags" description="Browse content by topic tags across blog posts and project case studies.">
+  <div class="relative overflow-hidden bg-[#060914] text-white py-16">
+    <div class="pointer-events-none absolute inset-0 opacity-35" style="background-image: linear-gradient(rgba(0, 255, 200, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 200, 0.08) 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,255,240,0.22),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(255,80,140,0.16),transparent_40%),radial-gradient(circle_at_60%_80%,rgba(86,140,255,0.2),transparent_50%)]"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-2 mb-3">
+        <div class="h-1 w-8 bg-brand-red rounded-full"></div>
+        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Topics</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Tag Cloud</h1>
+      <p class="text-blue-200 text-lg max-w-2xl">
+        Click any tag to see related blog posts and project case studies.
+      </p>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-wrap gap-3">
+      {sortedTags.map(([tag, count]) => {
+        const scale = 0.9 + (count / maxCount) * 0.6;
+        return (
+          <a
+            href={`/tags/${tagToSlug(tag)}`}
+            class="inline-flex items-center gap-2 rounded-full border border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+            style={`font-size: ${scale}rem`}
+          >
+            <span>{tag}</span>
+            <span class="text-xs opacity-80">{count}</span>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</Layout>

@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import BlogCard from '../../components/BlogCard.astro';
 import { getCollection } from 'astro:content';
+import { tagToSlug } from '../../utils/tags';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sortedPosts = allPosts.sort(
@@ -9,12 +10,22 @@ const sortedPosts = allPosts.sort(
 );
 
 const categories = ['All', ...new Set(sortedPosts.map((p) => p.data.category))];
+const allTags = sortedPosts.flatMap((post) => post.data.tags);
+const tagCounts = new Map<string, number>();
+
+for (const tag of allTags) {
+  tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
+}
+
+const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 ---
 
 <Layout title="Blog" description="Articles on Salesforce architecture, development best practices, and enterprise integration patterns.">
   <!-- Page Header -->
-  <div class="bg-gradient-to-br from-brand-navy to-blue-900 text-white py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="relative overflow-hidden bg-[#060914] text-white py-16">
+    <div class="pointer-events-none absolute inset-0 opacity-35" style="background-image: linear-gradient(rgba(0, 255, 200, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 200, 0.08) 1px, transparent 1px); background-size: 28px 28px;"></div>
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,255,240,0.22),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(255,80,140,0.16),transparent_40%),radial-gradient(circle_at_60%_80%,rgba(86,140,255,0.2),transparent_50%)]"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-1 w-8 bg-brand-red rounded-full"></div>
         <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Knowledge Base</span>
@@ -27,7 +38,10 @@ const categories = ['All', ...new Set(sortedPosts.map((p) => p.data.category))];
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Category Filter -->
+    <section class="mb-10" aria-labelledby="category-filter-heading">
+      <h2 id="category-filter-heading" class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Categories</h2>
+
+      <!-- Category Filter -->
     <div class="flex flex-wrap gap-2 mb-10" id="category-filters">
       {categories.map((cat) => (
         <button
@@ -43,6 +57,7 @@ const categories = ['All', ...new Set(sortedPosts.map((p) => p.data.category))];
         </button>
       ))}
     </div>
+    </section>
 
     <!-- Posts Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
@@ -64,6 +79,24 @@ const categories = ['All', ...new Set(sortedPosts.map((p) => p.data.category))];
     <div id="no-posts" class="hidden text-center py-16 text-gray-500 dark:text-gray-400">
       No posts found in this category.
     </div>
+
+    <section class="mt-14" aria-labelledby="tag-cloud-heading">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <h2 id="tag-cloud-heading" class="text-2xl font-bold text-gray-900 dark:text-white">Tags</h2>
+        <a href="/tags" class="text-sm font-medium text-brand-navy dark:text-blue-400 hover:underline">See all tags</a>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {sortedTags.map(([tag, count]) => (
+          <a
+            href={`/tags/${tagToSlug(tag)}`}
+            class="inline-flex items-center gap-2 rounded-full border border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+          >
+            <span>{tag}</span>
+            <span class="text-xs opacity-80">{count}</span>
+          </a>
+        ))}
+      </div>
+    </section>
   </div>
 </Layout>
 

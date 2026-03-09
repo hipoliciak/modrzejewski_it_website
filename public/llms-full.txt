@@ -1,0 +1,56 @@
+# Modrzejewski.IT - Detailed LLM Index
+
+Base URL: https://modrzejewski.it
+Primary topic: Salesforce solution architecture, integration, and enterprise data activation.
+
+## Navigation
+- Home: https://modrzejewski.it/
+- Blog: https://modrzejewski.it/blog
+- Tags: https://modrzejewski.it/tags
+- Blog Index (Machine): https://modrzejewski.it/llm/blog
+- Projects Index (Machine): https://modrzejewski.it/llm/projects
+- About Me: https://modrzejewski.it/about-me
+- Contact: https://modrzejewski.it/contact
+
+## Tag Pages
+- Tag hub: https://modrzejewski.it/tags
+- Tag route pattern: https://modrzejewski.it/tags/<tag-slug>
+- Example tags:
+	- https://modrzejewski.it/tags/salesforce
+	- https://modrzejewski.it/tags/data-cloud
+	- https://modrzejewski.it/tags/integration
+	- https://modrzejewski.it/tags/architecture
+	- https://modrzejewski.it/tags/marketing-cloud
+
+## Blog Entries
+### Designing Scalable Salesforce Integrations with MuleSoft
+- URL: https://modrzejewski.it/blog/post-1
+- Category: Architecture
+- Published: 2024-01-15
+- Author: Dominik Modrzejewski
+- Tags: Salesforce, MuleSoft, Integration, API, Architecture
+- Summary: A deep dive into architecting enterprise-grade integration platforms using MuleSoft Anypoint Platform with Salesforce, covering API-led connectivity, error handling, and best practices.
+
+### Apex Triggers: Best Practices for Bulk Processing
+- URL: https://modrzejewski.it/blog/post-2
+- Category: Development
+- Published: 2024-02-08
+- Author: Dominik Modrzejewski
+- Tags: Apex, Salesforce, Development, Best Practices, Triggers
+- Summary: Learn how to write efficient, scalable Apex triggers that handle bulk data operations without hitting Salesforce governor limits. Includes the trigger handler framework pattern.
+
+## Project Case Studies
+### Totalizator Sportowy: Salesforce Commerce and Retail Foundation
+- URL: https://modrzejewski.it/projects/totalizator-sportowy-salesforce-commerce-retail-foundation
+- Tags: Salesforce, Data Cloud, Snowflake, Marketing Cloud, API Integration
+- Summary: Architected the Salesforce foundation for both e-commerce and retail channels, integrating Snowflake and Salesforce Data Cloud through zero-copy federation. Defined data models and API integrations enabling a unified customer view and cross-channel activation in Marketing Cloud.
+
+### PwC (UK Enterprise Client): Enterprise Data Integration and Activation
+- URL: https://modrzejewski.it/projects/pwc-uk-enterprise-data-integration-activation
+- Tags: Salesforce, Data Cloud, Databricks, SAP, Marketing Cloud, Data Architecture
+- Summary: Led the data integration stream of an enterprise digital transformation program, connecting Databricks, SAP, and Salesforce Data Cloud. Designed governed data layers (atomic to aggregate to CRM-ready) and ensured seamless activation across Marketing Cloud and Salesforce core platform.
+
+### PKO BP: Digital Banking Transformation (IKO and BLIK)
+- URL: https://modrzejewski.it/projects/pko-bp-digital-banking-transformation-iko-blik
+- Tags: Banking, Digital Transformation, Data Integration, Compliance, IKO, BLIK
+- Summary: Supported the digital banking transformation by co-launching the IKO and BLIK platforms, collaborating with IT and data teams to ensure secure, compliant data flows and system integrations across banking channels.

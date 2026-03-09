@@ -5,6 +5,7 @@ interface Props {
   image?: string;
   url?: string;
   type?: string;
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 const {
@@ -13,6 +14,7 @@ const {
   image = '/og-default.png',
   url = Astro.url.href,
   type = 'website',
+  structuredData,
 } = Astro.props;
 
 const siteTitle = `${title} | Modrzejewski.IT`;
@@ -27,8 +29,6 @@ const siteTitle = `${title} | Modrzejewski.IT`;
 <meta property="og:url" content={url} />
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content="Modrzejewski.IT" />
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content={siteTitle} />
-<meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={new URL(image, Astro.url).href} />
+{structuredData && (
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+)}

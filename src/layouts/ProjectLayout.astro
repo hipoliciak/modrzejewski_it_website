@@ -1,5 +1,6 @@
 ---
 import Layout from './Layout.astro';
+import { tagToSlug } from '../utils/tags';
 
 interface Props {
   title: string;
@@ -30,9 +31,12 @@ const { title, description, tags, github, demo } = Astro.props;
       {tags.length > 0 && (
         <div class="flex flex-wrap gap-2 mb-6">
           {tags.map((tag) => (
-            <span class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-medium">
+            <a
+              href={`/tags/${tagToSlug(tag)}`}
+              class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-medium hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+            >
               {tag}
-            </span>
+            </a>
           ))}
         </div>
       )}
