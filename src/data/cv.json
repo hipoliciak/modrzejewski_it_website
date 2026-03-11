@@ -1,7 +1,7 @@
 {
   "name": "Dominik Modrzejewski",
   "title": "Salesforce B2C Solution Architect",
-  "email": "dominik.hipolit.modrzejewski@gmail.com",
+  "email": "dominik@modrzejewski.it",
   "linkedin": "https://www.linkedin.com/in/dominikmodrzejewski/",
   "trailhead": "https://www.salesforce.com/trailblazer/dominikmodrzejewski",
   "github": "https://github.com/hipoliciak/",
@@ -15,9 +15,9 @@
       "startDate": "2025-04",
       "endDate": null,
       "current": true,
-      "description": "Designed and delivered enterprise CDP and data activation solutions across Salesforce Data Cloud, Marketing Cloud, and Salesforce CRM for retail and e-commerce clients.",
+      "description": "Designed and delivered enterprise CDP and data activation solutions across Salesforce Data 360, Marketing Cloud, and Salesforce CRM for retail and e-commerce clients.",
       "highlights": [
-        "Designed a scalable enterprise CDP solution unifying about 60M customer records in Salesforce Data Cloud",
+        "Designed a scalable enterprise CDP solution unifying about 60M customer records in Salesforce Data 360",
         "Integrated Databricks, SAP, Salesforce CRM, and Marketing Cloud into a governed activation architecture",
         "Defined atomic to aggregate to CRM-ready data layers for analytics and personalization",
         "Led a cross-functional delivery team of 5 to drive implementation and adoption"
@@ -30,10 +30,10 @@
       "startDate": "2023-03",
       "endDate": "2025-03",
       "current": false,
-      "description": "Architected and delivered MarTech capabilities spanning Service Cloud, Marketing Cloud Engagement, Marketing Cloud Personalization, and Data Cloud across retail and digital channels.",
+      "description": "Architected and delivered MarTech capabilities spanning Service Cloud, Marketing Cloud Engagement, Marketing Cloud Personalization, and Data 360 across retail and digital channels.",
       "highlights": [
         "Built the Salesforce foundation for both e-commerce and retail channels",
-        "Implemented zero-copy federation between Snowflake and Salesforce Data Cloud for about 4M customers",
+        "Implemented zero-copy federation between Snowflake and Salesforce Data 360 for about 4M customers",
         "Defined data models and API integrations enabling a unified customer view and cross-channel activation",
         "Supported launch of a loyalty program on Salesforce Loyalty Cloud, reaching about 20% penetration in year one",
         "Directed a cross-functional team of 4 to deliver scalable and compliant solutions"

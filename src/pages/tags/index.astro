@@ -26,10 +26,10 @@ const maxCount = sortedTags.length > 0 ? sortedTags[0][1] : 1;
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-1 w-8 bg-brand-red rounded-full"></div>
-        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Topics</span>
+        <span class="text-white text-sm font-medium uppercase tracking-wider">Topics</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Tag Cloud</h1>
-      <p class="text-blue-200 text-lg max-w-2xl">
+      <p class="text-white text-lg max-w-2xl">
         Click any tag to see related blog posts and project case studies.
       </p>
     </div>
@@ -42,7 +42,7 @@ const maxCount = sortedTags.length > 0 ? sortedTags[0][1] : 1;
         return (
           <a
             href={`/tags/${tagToSlug(tag)}`}
-            class="inline-flex items-center gap-2 rounded-full border border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+            class="inline-flex items-center gap-2 rounded-full border border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-700 dark:text-slate-200 hover:bg-brand-red dark:hover:bg-brand-red hover:text-white dark:hover:text-white transition-colors"
             style={`font-size: ${scale}rem`}
           >
             <span>{tag}</span>

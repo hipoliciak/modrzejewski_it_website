@@ -11,32 +11,64 @@ import ContactForm from '../components/ContactForm.astro';
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-1 w-8 bg-brand-red rounded-full"></div>
-        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Contact</span>
+        <span class="text-white text-sm font-medium uppercase tracking-wider">Contact</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Let's Talk</h1>
-      <p class="text-blue-200 text-lg max-w-2xl">
+      <p class="text-white text-lg max-w-2xl">
         I'm available for architecture consulting, advisory work, and speaking engagements focused on Salesforce B2C, MarTech, and enterprise customer data platforms.
       </p>
     </div>
   </div>
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
-      <div class="lg:col-span-7">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start lg:items-stretch">
+      <div id="contact-form-col" class="lg:col-span-7 h-full">
         <ContactForm />
       </div>
 
-      <div class="relative lg:col-span-5 max-w-lg lg:max-w-md w-full mx-auto lg:mx-0 lg:ml-auto">
+      <div class="relative lg:col-span-5 max-w-lg lg:max-w-md w-full mx-auto lg:mx-0 lg:ml-auto lg:h-full">
         <div class="absolute -inset-2 rounded-3xl bg-gradient-to-br from-cyan-200/40 via-blue-300/30 to-brand-red/30 blur-xl dark:from-cyan-400/10 dark:via-blue-400/10 dark:to-brand-red/20"></div>
-        <div class="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-xl bg-white dark:bg-slate-900">
-          <img
-            src="/images/Dominik_Einstein.jpg"
-            alt="Dominik Modrzejewski portrait"
-            class="w-full h-auto object-cover"
-            loading="lazy"
-          />
+        <div id="contact-photo-card" class="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-xl bg-white dark:bg-slate-900 lg:h-full">
+          <picture class="block lg:h-full">
+            <source srcset="/images/Dominik_Einstein.avif" type="image/avif" />
+            <source srcset="/images/Dominik_Einstein.webp" type="image/webp" />
+            <img
+              src="/images/Dominik_Einstein.jpg"
+              alt="Dominik Modrzejewski portrait"
+              class="w-full h-auto lg:h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              width="768"
+              height="768"
+            />
+          </picture>
         </div>
       </div>
     </div>
   </div>
 </Layout>
+
+<script>
+  const contactFormCol = document.getElementById('contact-form-col');
+  const contactPhotoCard = document.getElementById('contact-photo-card');
+
+  const syncContactPhotoHeight = () => {
+    if (!contactFormCol || !contactPhotoCard) return;
+
+    if (!window.matchMedia('(min-width: 1024px)').matches) {
+      contactPhotoCard.style.removeProperty('height');
+      return;
+    }
+
+    const formHeight = Math.ceil(contactFormCol.getBoundingClientRect().height);
+    contactPhotoCard.style.height = `${formHeight}px`;
+  };
+
+  syncContactPhotoHeight();
+  window.addEventListener('resize', syncContactPhotoHeight, { passive: true });
+
+  if (contactFormCol && 'ResizeObserver' in window) {
+    const contactResizeObserver = new ResizeObserver(syncContactPhotoHeight);
+    contactResizeObserver.observe(contactFormCol);
+  }
+</script>

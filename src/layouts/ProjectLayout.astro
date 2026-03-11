@@ -33,7 +33,7 @@ const { title, description, tags, github, demo } = Astro.props;
           {tags.map((tag) => (
             <a
               href={`/tags/${tagToSlug(tag)}`}
-              class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-medium hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+              class="text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full font-medium hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white transition-colors"
             >
               {tag}
             </a>

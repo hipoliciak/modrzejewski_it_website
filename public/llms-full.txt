@@ -23,21 +23,21 @@ Primary topic: Salesforce solution architecture, integration, and enterprise dat
 	- https://modrzejewski.it/tags/marketing-cloud
 
 ## Blog Entries
-### Designing Scalable Salesforce Integrations with MuleSoft
-- URL: https://modrzejewski.it/blog/post-1
+### How to Debug Salesforce Automation Event-Triggered Flows
+- URL: https://modrzejewski.it/blog/the-missing-link-how-to-debug-salesforce-automation-event-triggered-flows
 - Category: Architecture
-- Published: 2024-01-15
+- Published: 2026-03-13
 - Author: Dominik Modrzejewski
-- Tags: Salesforce, MuleSoft, Integration, API, Architecture
-- Summary: A deep dive into architecting enterprise-grade integration platforms using MuleSoft Anypoint Platform with Salesforce, covering API-led connectivity, error handling, and best practices.
+- Tags: Marketing Cloud, Flow, Data 360, Debugging, Automation
+- Summary: A practical guide to debugging Salesforce Automation Event-Triggered Flows when $Record is null, including the subflow pattern and live end-to-end validation with Automated Process debug logs.
 
-### Apex Triggers: Best Practices for Bulk Processing
-- URL: https://modrzejewski.it/blog/post-2
-- Category: Development
-- Published: 2024-02-08
+### A Pivotal Shift in Salesforce Data 360 Pricing
+- URL: https://modrzejewski.it/blog/unlocking-the-enterprise-data-360-a-pivotal-shift-in-salesforce-data-cloud-pricing
+- Category: Architecture
+- Published: 2026-03-11
 - Author: Dominik Modrzejewski
-- Tags: Apex, Salesforce, Development, Best Practices, Triggers
-- Summary: Learn how to write efficient, scalable Apex triggers that handle bulk data operations without hitting Salesforce governor limits. Includes the trigger handler framework pattern.
+- Tags: Data 360, Pricing, Agentforce, Agentic Enterprise
+- Summary: An architect-focused analysis of Salesforce Data 360 pricing changes, including zero-cost batch ingestion, predictable profile pricing, and flex credit scaling economics.
 
 ## Project Case Studies
 ### Totalizator Sportowy: Salesforce Commerce and Retail Foundation

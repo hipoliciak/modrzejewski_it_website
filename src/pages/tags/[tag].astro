@@ -52,10 +52,10 @@ const taggedProjects = projects.filter((project) =>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-1 w-8 bg-brand-red rounded-full"></div>
-        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Tag</span>
+        <span class="text-white text-sm font-medium uppercase tracking-wider">Tag</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold mb-3">{selectedTag}</h1>
-      <p class="text-blue-200 text-lg max-w-2xl">
+      <p class="text-white text-lg max-w-2xl">
         {taggedPosts.length} blog post(s) and {taggedProjects.length} project(s) found.
       </p>
     </div>
@@ -77,8 +77,8 @@ const taggedProjects = projects.filter((project) =>
               class:list={[
                 'inline-flex items-center rounded-full border px-3 py-1.5 text-sm transition-colors',
                 isActive
-                  ? 'border-brand-navy dark:border-blue-500 bg-brand-navy dark:bg-blue-600 text-white'
-                  : 'border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600',
+                  ? 'border-blue-600 dark:border-blue-500 bg-blue-600 text-white'
+                  : 'border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white',
               ]}
             >
               {tag}

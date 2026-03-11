@@ -28,10 +28,10 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].l
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-2 mb-3">
         <div class="h-1 w-8 bg-brand-red rounded-full"></div>
-        <span class="text-blue-300 text-sm font-medium uppercase tracking-wider">Knowledge Base</span>
+        <span class="text-white text-sm font-medium uppercase tracking-wider">Insights</span>
       </div>
       <h1 class="text-4xl sm:text-5xl font-extrabold mb-4">Blog</h1>
-      <p class="text-blue-200 text-lg max-w-2xl">
+      <p class="text-white text-lg max-w-2xl">
         Insights on Salesforce architecture, integration patterns, and enterprise CRM best practices.
       </p>
     </div>
@@ -49,8 +49,8 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].l
           class:list={[
             'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 category-btn',
             cat === 'All'
-              ? 'bg-brand-navy text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-brand-navy hover:text-white',
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-brand-red dark:hover:bg-brand-red hover:text-white dark:hover:text-white',
           ]}
         >
           {cat}
@@ -89,7 +89,7 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].l
         {sortedTags.map(([tag, count]) => (
           <a
             href={`/tags/${tagToSlug(tag)}`}
-            class="inline-flex items-center gap-2 rounded-full border border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-brand-navy hover:text-white dark:hover:bg-blue-600 transition-colors"
+            class="inline-flex items-center gap-2 rounded-full border border-slate-300/90 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-brand-red dark:hover:bg-brand-red hover:text-white dark:hover:text-white transition-colors"
           >
             <span>{tag}</span>
             <span class="text-xs opacity-80">{count}</span>
@@ -111,10 +111,10 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].l
 
       // Update active button
       filterBtns.forEach((b) => {
-        b.classList.remove('bg-brand-navy', 'text-white');
+        b.classList.remove('bg-blue-600', 'text-white');
         b.classList.add('bg-gray-100', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-300');
       });
-      btn.classList.add('bg-brand-navy', 'text-white');
+      btn.classList.add('bg-blue-600', 'text-white');
       btn.classList.remove('bg-gray-100', 'dark:bg-gray-800', 'text-gray-600', 'dark:text-gray-300');
 
       // Filter posts
