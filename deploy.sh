@@ -56,9 +56,9 @@ REMOTE_WEBROOT="${REMOTE_WEBROOT}"
 KEEP_BACKUPS="${KEEP_BACKUPS}"
 REMOTE_ARCHIVE="${REMOTE_ARCHIVE}"
 
-timestamp=\"\$(date +%Y%m%d_%H%M%S)\"
-release_dir=\"\${REMOTE_WEBROOT}_new_\${timestamp}\"
-backup_dir=\"\${REMOTE_WEBROOT}_backup_\${timestamp}\"
+timestamp="\$(date +%Y%m%d_%H%M%S)"
+release_dir="\${REMOTE_WEBROOT}_new_\${timestamp}"
+backup_dir="\${REMOTE_WEBROOT}_backup_\${timestamp}"
 
 mkdir -p "\$release_dir"
 tar -xzf "\$REMOTE_ARCHIVE" -C "\$release_dir"

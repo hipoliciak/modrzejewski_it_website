@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "update-dates": "node scripts/update-blog-dates.js",
+    "build": "npm run update-dates && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },

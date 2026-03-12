@@ -1,0 +1,79 @@
+---
+interface Props {
+  term?: string;
+}
+
+const {
+  term,
+} = Astro.props;
+
+const repo = import.meta.env.PUBLIC_GISCUS_REPO;
+const repoId = import.meta.env.PUBLIC_GISCUS_REPO_ID;
+const category = import.meta.env.PUBLIC_GISCUS_CATEGORY;
+const categoryId = import.meta.env.PUBLIC_GISCUS_CATEGORY_ID;
+const mapping = import.meta.env.PUBLIC_GISCUS_MAPPING || 'pathname';
+const inputPosition = import.meta.env.PUBLIC_GISCUS_INPUT_POSITION || 'bottom';
+const darkTheme = import.meta.env.PUBLIC_GISCUS_DARK_THEME || 'dark_dimmed';
+
+const isConfigured = Boolean(repo && repoId && category && categoryId);
+---
+
+{isConfigured && (
+  <section class="mt-12 border-t border-gray-200 dark:border-gray-700 pt-10" aria-label="Comments">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Comments</h2>
+    <div id="giscus-container"></div>
+    <script define:vars={{ repo, repoId, category, categoryId, mapping, term, inputPosition, darkTheme }}>
+      const initGiscus = () => {
+        const isDark = document.documentElement.classList.contains('dark');
+        const theme = isDark ? darkTheme : 'light';
+
+        const script = document.createElement('script');
+        script.src = 'https://giscus.app/client.js';
+        script.dataset.repo = repo;
+        script.dataset.repoId = repoId;
+        script.dataset.category = category;
+        script.dataset.categoryId = categoryId;
+        script.dataset.mapping = mapping;
+        script.dataset.term = term;
+        script.dataset.strict = '0';
+        script.dataset.reactionsEnabled = '1';
+        script.dataset.emitMetadata = '0';
+        script.dataset.inputPosition = inputPosition;
+        script.dataset.theme = theme;
+        script.dataset.lang = 'en';
+        script.dataset.loading = 'lazy';
+        script.crossOrigin = 'anonymous';
+        script.async = true;
+
+        const container = document.getElementById('giscus-container');
+        if (container) {
+          container.appendChild(script);
+        }
+      };
+
+      // Initialize giscus when page loads
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGiscus);
+      } else {
+        initGiscus();
+      }
+
+      // Re-initialize on Astro page transitions
+      document.addEventListener('astro:page-load', initGiscus);
+
+      // Update theme when dark mode changes
+      const observer = new MutationObserver(() => {
+        const container = document.getElementById('giscus-container');
+        if (container) {
+          container.innerHTML = '';
+          initGiscus();
+        }
+      });
+
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+    </script>
+  </section>
+)}

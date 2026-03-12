@@ -1,6 +1,7 @@
 ---
 import Layout from './Layout.astro';
 import { tagToSlug } from '../utils/tags';
+import GiscusComments from '../components/GiscusComments.astro';
 
 interface Props {
   title: string;
@@ -119,6 +120,8 @@ const articleSchema = {
         <a href="/contact" class="font-semibold text-brand-navy dark:text-blue-400 hover:underline"> contact form</a>.
       </p>
     </aside>
+
+    <GiscusComments term={title} />
   </article>
 
   <!-- Mermaid.js support -->

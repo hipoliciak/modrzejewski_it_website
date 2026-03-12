@@ -21,7 +21,7 @@ const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
     <input
       type="text"
       id="company-name"
-      name="company_name"
+      name="_company_name"
       tabindex="-1"
       autocomplete="off"
       aria-hidden="true"
@@ -154,6 +154,8 @@ const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
     submitBtn.classList.toggle('opacity-70', isLoading);
     submitBtn.classList.toggle('cursor-not-allowed', isLoading);
     submitBtn.classList.toggle('hover:-translate-y-0.5', !isLoading);
+    submitBtn.classList.toggle('hover:bg-brand-red', !isLoading);
+    submitBtn.classList.toggle('dark:hover:bg-brand-red', !isLoading);
     submitBtn.innerHTML = isLoading
       ? 'Sending...'
       : 'Send Message';
