@@ -1,4 +1,6 @@
 ---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Layout from './Layout.astro';
 import { tagToSlug } from '../utils/tags';
 
@@ -8,7 +10,7 @@ interface Props {
   tags: string[];
   github?: string;
   demo?: string;
-  image?: string;
+  image?: ImageMetadata;
   imageAlt?: string;
 }
 
@@ -30,10 +32,12 @@ const { title, description, tags, github, demo, image, imageAlt } = Astro.props;
 
       {image && (
         <figure class="mb-6 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-          <img
+          <Image
             src={image}
             alt={imageAlt || `${title} cover image`}
             loading="lazy"
+            format="webp"
+            sizes="(max-width: 1024px) 100vw, 1024px"
             class="w-full h-auto object-cover"
           />
         </figure>

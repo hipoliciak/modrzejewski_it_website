@@ -101,7 +101,7 @@ const taggedProjects = projects.filter((project) =>
               description={post.data.description}
               category={post.data.category}
               tags={post.data.tags}
-              image={post.data.image?.src}
+              image={post.data.image}
               imageAlt={post.data.imageAlt}
               slug={post.id.replace(/\.(md|mdx)$/, '')}
             />
@@ -123,7 +123,7 @@ const taggedProjects = projects.filter((project) =>
               tags={project.data.tags}
               github={project.data.github}
               demo={project.data.demo}
-              image={project.data.image?.src}
+              image={project.data.image}
               imageAlt={project.data.imageAlt}
               slug={project.id.replace(/\.(md|mdx)$/, '')}
             />

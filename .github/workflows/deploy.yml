@@ -1,0 +1,99 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      REMOTE_WEBROOT: ${{ secrets.REMOTE_WEBROOT }}
+      KEEP_BACKUPS: ${{ secrets.KEEP_BACKUPS }}
+      REMOTE_ARCHIVE: /tmp/modrzejewski_it_website_deploy.tar.gz
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Package dist
+        run: tar -czf /tmp/modrzejewski_it_website.tar.gz -C dist .
+
+      - name: Start SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+
+      - name: Add VPS host key
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload release archive
+        run: |
+          scp -P "$VPS_PORT" /tmp/modrzejewski_it_website.tar.gz "$VPS_USER@$VPS_HOST:$REMOTE_ARCHIVE"
+
+      - name: Activate release atomically
+        run: |
+          ssh -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            "REMOTE_WEBROOT='$REMOTE_WEBROOT' KEEP_BACKUPS='${KEEP_BACKUPS:-5}' REMOTE_ARCHIVE='$REMOTE_ARCHIVE' /bin/bash -s" <<'EOF'
+          set -euo pipefail
+
+          timestamp="$(date +%Y%m%d_%H%M%S)"
+          release_dir="${REMOTE_WEBROOT}_new_${timestamp}"
+          backup_dir="${REMOTE_WEBROOT}_backup_${timestamp}"
+
+          mkdir -p "$release_dir"
+          tar -xzf "${REMOTE_ARCHIVE}" -C "$release_dir"
+
+          if [[ -d "${REMOTE_WEBROOT}" ]]; then
+            mv "${REMOTE_WEBROOT}" "$backup_dir"
+          fi
+
+          mv "$release_dir" "${REMOTE_WEBROOT}"
+          rm -f "${REMOTE_ARCHIVE}"
+
+          if command -v systemctl >/dev/null 2>&1; then
+            if systemctl list-unit-files --type=service | grep -q '^nginx\.service'; then
+              systemctl reload nginx
+            else
+              echo "[remote] nginx.service not found, skipping reload."
+            fi
+          fi
+
+          keep_backups="${KEEP_BACKUPS:-5}"
+          if [[ "$keep_backups" =~ ^[0-9]+$ ]] && (( keep_backups >= 0 )); then
+            mapfile -t backups < <(ls -1dt "${REMOTE_WEBROOT}_backup_"* 2>/dev/null || true)
+            if (( ${#backups[@]} > keep_backups )); then
+              for old in "${backups[@]:keep_backups}"; do
+                rm -rf "$old"
+              done
+            fi
+          fi
+          EOF
+
+      - name: Cleanup local archive
+        run: rm -f /tmp/modrzejewski_it_website.tar.gz

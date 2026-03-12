@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import cvData from '../data/cv.json';
+import profilePhotoCv from '../assets/images/Dominik_Modrzejewski_CV.jpg';
 ---
 
 <Layout title="About Me" description={`About ${cvData.name} - ${cvData.title}`}>
@@ -24,19 +26,15 @@ import cvData from '../data/cv.json';
     <section class="bg-white dark:bg-brand-darkcard border border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8">
       <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
         <div class="flex flex-col sm:flex-row items-start gap-4 sm:gap-5">
-          <picture>
-            <source srcset="/images/Dominik_Modrzejewski_CV.avif" type="image/avif" />
-            <source srcset="/images/Dominik_Modrzejewski_CV.webp" type="image/webp" />
-            <img
-              src="/images/Dominik_Modrzejewski_CV.jpg"
-              alt="Portrait of Dominik Modrzejewski"
-              class="h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
-              loading="eager"
-              decoding="async"
-              width="128"
-              height="128"
-            />
-          </picture>
+          <Image
+            src={profilePhotoCv}
+            alt="Portrait of Dominik Modrzejewski"
+            class="h-24 w-24 sm:h-32 sm:w-32 rounded-xl object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
+            loading="eager"
+            format="webp"
+            width={128}
+            height={128}
+          />
           <div>
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">{cvData.name}</h2>
             <p class="text-lg text-blue-600 dark:text-blue-400 font-medium">{cvData.title}</p>

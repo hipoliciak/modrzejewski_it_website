@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import ContactForm from '../components/ContactForm.astro';
+import profilePhotoContact from '../assets/images/Dominik_Einstein.jpg';
 ---
 
 <Layout title="Contact" description="Let's talk about Salesforce B2C architecture, MarTech, and enterprise customer data platforms.">
@@ -29,19 +31,15 @@ import ContactForm from '../components/ContactForm.astro';
       <div class="relative lg:col-span-5 max-w-lg lg:max-w-md w-full mx-auto lg:mx-0 lg:ml-auto lg:h-full">
         <div class="absolute -inset-2 rounded-3xl bg-gradient-to-br from-cyan-200/40 via-blue-300/30 to-brand-red/30 blur-xl dark:from-cyan-400/10 dark:via-blue-400/10 dark:to-brand-red/20"></div>
         <div id="contact-photo-card" class="relative rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-xl bg-white dark:bg-slate-900 lg:h-full">
-          <picture class="block lg:h-full">
-            <source srcset="/images/Dominik_Einstein.avif" type="image/avif" />
-            <source srcset="/images/Dominik_Einstein.webp" type="image/webp" />
-            <img
-              src="/images/Dominik_Einstein.jpg"
-              alt="Dominik Modrzejewski portrait"
-              class="w-full h-auto lg:h-full object-cover"
-              loading="lazy"
-              decoding="async"
-              width="768"
-              height="768"
-            />
-          </picture>
+          <Image
+            src={profilePhotoContact}
+            alt="Dominik Modrzejewski portrait"
+            class="w-full h-auto lg:h-full object-cover"
+            loading="lazy"
+            format="webp"
+            width={768}
+            height={768}
+          />
         </div>
       </div>
     </div>

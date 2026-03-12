@@ -8,7 +8,7 @@ category: "Architecture"
 featured: true
 featuredOrder: 1
 tags: ["Marketing Cloud", "Flow", "Data 360", "Debugging", "Automation"]
-image: ./how-to-debug-salesforce-automation-event-triggered-flows/cover-automation-debug.png
+image: ../../assets/blog/how-to-debug-salesforce-automation-event-triggered-flows/cover-automation-debug.png
 imageAlt: "Abstract cover illustrating Salesforce Flow debugging with status panels and architecture motifs"
 draft: false
 ---
@@ -54,7 +54,7 @@ Take all the logic you intended to have in your parent flow (actions, CRUDs, dec
 
 In this new Autolaunched flow, create a record variable designed to hold your primary record (e.g., `var_IncomingOrder` for the Order object). Crucially, ensure that **Available for input** is checked.
 
-![Flow variable configuration with “Available for input” enabled](./how-to-debug-salesforce-automation-event-triggered-flows/create-record-variable-available-for-input.avif)
+![Flow variable configuration with “Available for input” enabled](../../assets/blog/how-to-debug-salesforce-automation-event-triggered-flows/create-record-variable-available-for-input.avif)
 
 _Flow input variable setup (Autolaunched Flow)_
 
@@ -66,13 +66,13 @@ Open your subflow (the Autolaunched Flow you created in step 1) in its own Flow 
 
 Select a sample record and click **Run**.
 
-![Flow debug configuration selecting a test record for the input variable](./how-to-debug-salesforce-automation-event-triggered-flows/debug-config-populating-input-variable.avif)
+![Flow debug configuration selecting a test record for the input variable](../../assets/blog/how-to-debug-salesforce-automation-event-triggered-flows/debug-config-populating-input-variable.avif)
 
 _Debug run configuration populated with a test record_
 
 The flow will execute perfectly, allowing you to validate your desired outcomes.
 
-![Flow debug success](./how-to-debug-salesforce-automation-event-triggered-flows/debug-successful-run.avif)
+![Flow debug success](../../assets/blog/how-to-debug-salesforce-automation-event-triggered-flows/debug-successful-run.avif)
 
 _Successful debug run based on a test record_
 
