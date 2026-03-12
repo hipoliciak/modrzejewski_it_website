@@ -27,6 +27,7 @@ export const GET: APIRoute = async () => {
     '/tags',
     '/about-me',
     '/contact',
+    '/privacy-policy',
     '/llm/blog',
     '/llm/projects',
   ];

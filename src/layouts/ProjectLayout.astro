@@ -8,9 +8,11 @@ interface Props {
   tags: string[];
   github?: string;
   demo?: string;
+  image?: string;
+  imageAlt?: string;
 }
 
-const { title, description, tags, github, demo } = Astro.props;
+const { title, description, tags, github, demo, image, imageAlt } = Astro.props;
 ---
 
 <Layout title={title} description={description} type="article">
@@ -25,6 +27,17 @@ const { title, description, tags, github, demo } = Astro.props;
       <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
         {title}
       </h1>
+
+      {image && (
+        <figure class="mb-6 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          <img
+            src={image}
+            alt={imageAlt || `${title} cover image`}
+            loading="lazy"
+            class="w-full h-auto object-cover"
+          />
+        </figure>
+      )}
 
       <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">{description}</p>
 

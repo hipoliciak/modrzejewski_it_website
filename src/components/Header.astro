@@ -42,7 +42,7 @@ const normalizedCurrentPath = normalizePath(currentPath);
               'px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200',
               isActive
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white',
+                : 'text-gray-600 dark:text-gray-300 header-hoverable',
             ]}
           >
             {label}
@@ -57,7 +57,7 @@ const normalizedCurrentPath = normalizePath(currentPath);
         <button
           id="theme-toggle"
           aria-label="Toggle dark mode"
-          class="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white transition-colors duration-200"
+          class="p-2 rounded-md text-gray-600 dark:text-gray-300 header-hoverable transition-colors duration-200"
         >
           <!-- Sun icon (shown in dark mode) -->
           <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden dark:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,7 +73,7 @@ const normalizedCurrentPath = normalizePath(currentPath);
         <button
           id="mobile-menu-btn"
           aria-label="Toggle mobile menu"
-          class="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white transition-colors duration-200"
+          class="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 header-hoverable transition-colors duration-200"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -95,7 +95,7 @@ const normalizedCurrentPath = normalizePath(currentPath);
               'px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200',
               isActive
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-600 dark:text-gray-300 hover:bg-brand-red hover:text-white dark:hover:bg-brand-red dark:hover:text-white',
+                : 'text-gray-600 dark:text-gray-300 header-hoverable',
             ]}
           >
             {label}
@@ -122,3 +122,12 @@ const normalizedCurrentPath = normalizePath(currentPath);
     mobileMenu?.classList.toggle('hidden');
   });
 </script>
+
+<style>
+  @media (hover: hover) and (pointer: fine) {
+    .header-hoverable:hover {
+      background-color: #E03C31;
+      color: #ffffff;
+    }
+  }
+</style>

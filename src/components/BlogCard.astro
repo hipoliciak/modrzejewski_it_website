@@ -7,12 +7,25 @@ interface Props {
   category: string;
   tags: string[];
   slug: string;
+  image?: string;
+  imageAlt?: string;
 }
 
-const { title, description, category, tags, slug } = Astro.props;
+const { title, description, category, tags, slug, image, imageAlt } = Astro.props;
 ---
 
 <article class="group bg-slate-50 dark:bg-slate-800/70 rounded-xl border border-slate-300 dark:border-slate-700 p-6 shadow-sm hover:shadow-lg hover:border-brand-navy dark:hover:border-blue-500 transition-all duration-300 hover:-translate-y-1">
+  {image && (
+    <a href={`/blog/${slug}`} class="block mb-4 overflow-hidden rounded-lg border border-slate-300 dark:border-slate-700">
+      <img
+        src={image}
+        alt={imageAlt || `${title} cover image`}
+        loading="lazy"
+        class="w-full h-44 object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+      />
+    </a>
+  )}
+
   <a href={`/blog/${slug}`} class="block rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-navy dark:focus-visible:ring-blue-400">
     <div class="mb-3">
       <span class="inline-block bg-brand-navy/10 dark:bg-blue-500/20 text-brand-navy dark:text-blue-400 text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full">

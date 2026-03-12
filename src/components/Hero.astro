@@ -84,8 +84,8 @@ const profilePhoto = '/images/Dominik_Modrzejewski.jpg';
   <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,255,240,0.22),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(255,80,140,0.16),transparent_40%),radial-gradient(circle_at_60%_80%,rgba(86,140,255,0.2),transparent_50%)]"></div>
 
   <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[4.5rem] pb-10 md:pt-[5.5rem] md:pb-14">
-    <div class="grid grid-cols-1 min-[600px]:grid-cols-12 gap-10 min-[600px]:gap-12 items-center min-[600px]:items-start">
-      <div id="hero-copy-block" class="max-w-4xl min-[600px]:col-span-7 min-[600px]:max-w-3xl">
+    <div class="grid grid-cols-1 min-[800px]:grid-cols-12 gap-10 min-[800px]:gap-12 items-center min-[800px]:items-start">
+      <div id="hero-copy-block" class="max-w-4xl min-[800px]:col-span-7 min-[800px]:max-w-3xl">
         <h1 class="text-[clamp(2.25rem,7vw,4.5rem)] font-extrabold leading-tight mb-6">
           Let's talk...
           <span class="block text-brand-red mt-2 hero-rotating-text hero-rotating-visible" id="hero-rotating-text">
@@ -93,25 +93,35 @@ const profilePhoto = '/images/Dominik_Modrzejewski.jpg';
           </span>
         </h1>
 
-        <p class="text-[clamp(0.88rem,1.25vw,1.05rem)] text-white max-w-[40ch] min-[600px]:max-w-[30ch] min-[700px]:max-w-[34ch] lg:max-w-2xl mb-10 leading-relaxed">
-          Architecting enterprise customer platforms across Salesforce, CDP, and Marketing automation.
+        <p class="text-[clamp(0.88rem,1.25vw,1.05rem)] text-white max-w-full min-[800px]:max-w-[34ch] lg:max-w-2xl mb-10 leading-relaxed">
+          I'm Salesforce B2C Architect, ex-PR Director, and tech explorer. Specialized in enterprise system architecture, customer management, and marketing automation. Exploring the intersection of data, CRM, and business strategy.
         </p>
 
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-3">
           <a
             href="/blog"
-            class="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-brand-red dark:hover:bg-brand-red transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060914]"
+            class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2.5 text-sm sm:text-base rounded-lg font-semibold hover:bg-brand-red dark:hover:bg-brand-red transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060914]"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
             Read Blog
           </a>
+
+          <a
+            href="/about-me"
+            class="inline-flex items-center gap-2 bg-white text-blue-600 px-4 py-2.5 text-sm sm:text-base rounded-lg font-semibold border border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060914]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.364 4.56M15 11a3 3 0 11-6 0 3 3 0 016 0zm-7 8a7 7 0 0114 0" />
+            </svg>
+            About Me
+          </a>
         </div>
       </div>
 
-      <div class="hidden min-[600px]:block min-[600px]:col-span-5 min-[600px]:justify-self-end">
-        <div id="hero-photo-wrap" class="relative w-fit min-[600px]:ml-auto min-[600px]:mr-0">
+      <div class="hidden min-[800px]:block min-[800px]:col-span-5 min-[800px]:justify-self-end">
+        <div id="hero-photo-wrap" class="relative w-fit min-[800px]:ml-auto min-[800px]:mr-0">
           <div class="absolute -inset-1 rounded-3xl bg-gradient-to-br from-cyan-300/45 via-blue-400/35 to-fuchsia-500/30 blur-lg"></div>
           <div class="relative rounded-3xl overflow-hidden border border-cyan-200/30 bg-slate-900/60 shadow-2xl backdrop-blur-sm aspect-square h-full">
             <img
@@ -128,7 +138,7 @@ const profilePhoto = '/images/Dominik_Modrzejewski.jpg';
 </section>
 
 <script>
-  const rotatingTerms = ['Data 360', 'Salesforce', 'Architecture', 'CDP'];
+  const rotatingTerms = ['Data 360', 'Architecture', 'Salesforce', 'Marketing', 'Strategy'];
   const rotatingEl = document.getElementById('hero-rotating-text');
   const heroCopyBlock = document.getElementById('hero-copy-block');
   const heroPhotoWrap = document.getElementById('hero-photo-wrap');
@@ -136,7 +146,7 @@ const profilePhoto = '/images/Dominik_Modrzejewski.jpg';
   const syncHeroPhotoHeight = () => {
     if (!heroCopyBlock || !heroPhotoWrap) return;
 
-    if (!window.matchMedia('(min-width: 600px)').matches) {
+    if (!window.matchMedia('(min-width: 800px)').matches) {
       heroPhotoWrap.style.removeProperty('height');
       return;
     }

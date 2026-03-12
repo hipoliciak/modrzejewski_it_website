@@ -5,101 +5,78 @@ pubDate: 2026-03-13
 author: "Dominik Modrzejewski"
 category: "Architecture"
 featured: true
+featuredOrder: 1
 tags: ["Marketing Cloud", "Flow", "Data 360", "Debugging", "Automation"]
+image: ./how-to-debug-salesforce-automation-event-triggered-flows/cover-automation-debug.png
+imageAlt: "Abstract cover illustrating Salesforce Flow debugging with status panels and architecture motifs"
 draft: false
 ---
 
-You’ve done the heavy lifting. You’ve enabled the required editions—Enterprise, Unlimited, or those supported by Data 360, utilizing the new features within Marketing Cloud Growth or Advanced Edition. You’ve configured the trigger to listen to updates on a Prospect, Lead, or Contact. Your flow logic is flawless.
+You’ve done the heavy lifting. You’ve built a complex Automation Event-Triggered Flow based on the live changes to Prospect, Lead, Contact or related objects. The logic seems flawless and you're ready for testing.
 
-But then you click Debug in Flow Builder, and the first thing you see in the execution log is a crushing sight:
+But then you click Debug in Flow Builder and the first thing you see in the execution log is a crushing sight:
 
 `$Record = null`
 
-If you are experiencing this, you aren't doing anything wrong—you’ve simply run into a known platform limitation. This post will explain how this powerful new feature works, why standard debugging fails, and the precise steps you need to take to successfully test and validate your flow.
+You cannot confirm your logic is correct: no attribute is passed to Decision splits, no condition checks or assignments performed based on triggering record. If you are experiencing this, you aren't doing anything wrong. You’ve run into a platform limitation.
 
-## A New Era of Personalized Automation
+But first things first.
 
-Automation Event-Triggered Flows represent a significant step forward in uniting the power of the core Salesforce Platform with real-time marketing events.
+## What is an Automation Event-Triggered Flow
 
-When a Prospect, Lead, Contact, or a related individual record is created or updated within Data 360 or Marketing Cloud Growth/Advanced, it fires an asynchronous event. This flow allows you to capture that event instantly and react with the full toolkit of Flow Builder—from decision trees to email actions. It's the engine for real-time personalization.
+Automation Event-Triggered Flows represent a significant step forward in uniting the long-standing power of the core Salesforce platform with evolving capabilities of Marketing Cloud Next. They allow for setting up a flow-based automations that fire each time a customer performs one of the predefined sets of actions, e.g. submits a form on your website or subscribes to your emails.
 
-Setting up the architectural foundation for these events requires a strategic approach. We highly recommend reviewing these insights from fellow trailblazers who have navigated these waters:
+One of the recently added events that can trigger this type of flow is Prospect, Lead, Contact, or Related Record Change Automation Event. It allows for designing near real-time responses to events related to customer records and records related to customer records.
 
-- [The Agentic Marketer: Individual-Related Record Event + Apex Personalization](https://the-agentic-marketer.com/marketing-cloud-next-tips-from-the-trenches/individual-related-record-event-apex-personalization/) – Excellent for practical context on using these events for high-level personalization.
-- [Marketing Cloud Tips: Run Event-Triggered Flows When CRM Records Change](https://medium.com/@marketingcloudtips/marketing-cloud-next-run-event-triggered-flows-when-crm-records-change-a3a05691b427) – A great practical guide on setting up the trigger connections for CRM changes.
+If you want to learn more about how to set up this type of flow before proceeding to its, I recommend reading through the resources below:
+- [Salesforce Help: Prospect, Lead, Contact, or Related Record Change Automation Event](https://help.salesforce.com/s/articleView?id=platform.automate_flow_ref_event_individual_related_record_event.htm&type=5)
+- [The Agentic Marketer: Individual-Related Record Event + Apex Personalization](https://the-agentic-marketer.com/marketing-cloud-next-tips-from-the-trenches/individual-related-record-event-apex-personalization/)
+- [Marketing Cloud Tips: Run Event-Triggered Flows When CRM Records Change](https://medium.com/@marketingcloudtips/marketing-cloud-next-run-event-triggered-flows-when-crm-records-change-a3a05691b427)
 
-## The Problem: Why Standard Debug Fails
+## Why Debug Fails for Automation Event-Triggered Flow
 
-The traditional Flow Debugger operates by allowing you to manually select a record or inject a sample JSON payload. However, Automation Event-Triggered Flows are unique. They are triggered by external, asynchronous event payloads managed by Data 360 or the Marketing Cloud Data Bus.
+For "traditional" Salesforce Flows (like a Record-Triggered Flow), during debugging you simply select a triggering record and... usually that's it. You take a look at how flow is executed, which path was taken and whether your logic and assumptions are correct.
 
-When you click the "Debug" button from the parent flow canvas, the debugger attempts to start the interview but lacks the mechanism to simulate or "mock" that complex incoming Data 360 payload. Consequently, the `$Record` global variable (which should hold the triggering Prospect, Lead, or Contact data) is instantiated as `null`.
+In the marketing-related Automation Event-Triggered Flows, it simply doesn't work. The `$Record` global variable (which should hold the triggering Prospect, Lead, or Contact data) is instantiated as `null`. As a result, you cannot safely test, e.g. whether this cool decision split you designed based on the Order status from triggering record actually works.
 
-Salesforce formally acknowledges this behavior in Knowledge Article `#005185008`. Per the documentation, debugging these specific Automation Events evaluates each step as an isolated transaction that rolls back automatically, preventing standard, integrated debugging from the parent canvas.
+But worry not, there is a workaround.
 
-## The Solution, Part 1: Debugging the Logic (The Subflow Hack)
+## How to Debug Automation Event-Triggered Flow
 
-To test your automation logic, you must decouple it from the event trigger. If you debug the parent flow and try to pass `$Record` to a subflow, you are still passing `null`.
-
-Here is the correct approach to test your execution steps:
+To test your automation logic, you must decouple it from the event trigger in Automation Event-Triggered Flow.
 
 ### Step 1: Create an Autolaunched Flow
 
-Take all the logic you intended to have in your parent flow (the "Send Email" action, any Update Records elements, decisions, etc.) and move it into a new, standard Autolaunched Flow (No Trigger).
+Take all the logic you intended to have in your parent flow (actions, CRUDs, decisions, etc.) and move it into a new, standard Autolaunched Flow (No Trigger).
 
 ### Step 2: Define a Record Input Variable
 
-In this new Autolaunched flow, create a record variable designed to hold your primary record (e.g., `var_IncomingProspect` for a Prospect object). Crucially, ensure that **Available for input** is checked.
+In this new Autolaunched flow, create a record variable designed to hold your primary record (e.g., `var_IncomingOrder` for the Order object). Crucially, ensure that **Available for input** is checked.
 
-`[INSERT_IMAGE_CREATE_RECORD_VARIABLE_AVAILABLE_FOR_INPUT]`
+![Flow variable configuration with “Available for input” enabled](./how-to-debug-salesforce-automation-event-triggered-flows/create-record-variable-available-for-input.avif)
 
-### Step 3: Reference the Subflow
+_Flow input variable setup (Autolaunched Flow)_
 
-Go back to your Automation Event-Triggered Flow (the one with `$Record` as null). Replace all the logic with a single element: a Subflow that calls your new Autolaunched flow. In the input mapping configuration, map the parent’s empty `$Record` to your `var_IncomingProspect` input variable.
-
-### Step 4: Debug the Autolaunched Flow DIRECTLY
+### Step 3: Debug the Autolaunched Flow DIRECTLY
 
 This is the key step. You must completely ignore the parent flow’s debug button.
 
-Open your Order Shipped Subflow (the Autolaunched flow) in its own Flow Builder window.
+Open your subflow (the Autolaunched Flow you created in step 1) in its own Flow Builder window. Click **Debug** from inside this flow. The configuration screen will open and it will prompt you to manually select a specific test record to populate `var_IncomingOrder`.
 
-Click **Debug** from inside this flow.
+Select a sample record and click **Run**.
 
-The configuration screen will open, but now it will prompt you to manually select a specific test record to populate `var_IncomingProspect`.
+![Flow debug configuration selecting a test record for the input variable](./how-to-debug-salesforce-automation-event-triggered-flows/debug-config-populating-input-variable.avif)
 
-Select a sample record and click **Run**. The flow will execute perfectly, allowing you to validate your outcomes (like email sends) without needing the live Data 360 event.
+_Debug run configuration populated with a test record_
 
-`[INSERT_IMAGE_DEBUG_CONFIG_POPULATING_INPUT_VARIABLE]`
+The flow will execute perfectly, allowing you to validate your desired outcomes.
 
-## The Solution, Part 2: Live End-to-End Testing
+![Flow debug success](./how-to-debug-salesforce-automation-event-triggered-flows/debug-successful-run.avif)
 
-The Subflow method confirms your logic works if it receives a record. But how do you confirm that the real-time event from Data 360 is actually firing the flow in production?
+_Successful debug run based on a test record_
 
-Because these events run asynchronously in the background under system users, watching the Flow Builder canvas won't show you the live execution. You must track the system execution directly.
+## Workaround Limitation
 
-### Step 1: Activate Both Flows
+Before we wrap it up, you need to know there is an important limitation to this workaround. The standard Autolaunched Flows don't have access to the new interesting marketing-related flow actions (like "Send Email Message" or "Consent Request") and activities (e.g. "Path Experiment"). Hence, this way you can only test such things like decision splits, CRUD operations, assignments, loops or waits.
 
-Activate your Autolaunched (Subflow) and your parent Automation Event-Triggered Flow. End-to-end integration testing can only happen when the flows are live.
-
-### Step 2: Set a Trace Flag for "Automated Process"
-
-This is the most critical monitoring step. You cannot trace your own user account; you must trace the background system user handling the event bus.
-
-Navigate to **Setup > Debug Logs**.
-
-Click **New** to create a Trace Flag.
-
-Set the **Traced Entity Type** to **Automated Process** (in some organizations, this might also be your designated **Default Workflow User**).
-
-Configure a Debug Level where the **Workflow** category is set to at least `INFO` (use `FINER` if you need to inspect the raw JSON event payload coming from Marketing Cloud/Data 360).
-
-`[INSERT_IMAGE_DEBUG_LOGS_SETUP_AUTOMATED_PROCESS]`
-
-### Step 3: Trigger the Event and Check Logs
-
-Go to your source system (Data 360 or Marketing Cloud Growth) and perform the action that triggers the automation event (e.g., updating a Contact's email address).
-
-Return to the **Setup > Debug Logs** page in Salesforce and refresh. You will see a new debug log generated by the **Automated Process** user. This log contains the definitive, step-by-step transcript showing the flow’s execution, confirming the event reached Salesforce, the flow ran, and whether the subflow succeeded or failed.
-
-### Step 4: Verify Outcomes
-
-Check the destination record’s Activity Timeline. Since your flow includes a "Send Email" action, you should see a successful email entry logged against the Contact or Lead, marked as created by the **Automated Process** system user.
+For testing and debugging the MC Next-specific marketing actions and activities, you'll unfortunately need to activate the flow straightaway without debugging and trigger it by updating the chosen record in Salesforce core. To limit the potential undesired impact, do it in a sandbox and - if you're testing sendouts - double (or triple) check which email address is tied to the triggering Prospect, Lead or Contact record.

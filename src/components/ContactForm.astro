@@ -2,7 +2,7 @@
 const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
 ---
 
-<div class="w-full">
+<div id="contact-form-wrapper" class="w-full">
   <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Me</h2>
 
   <form
@@ -13,10 +13,20 @@ const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
     novalidate
   >
     <input type="hidden" name="_subject" value="New website contact message" />
-    <input type="hidden" name="_captcha" value="true" />
+    <input type="hidden" name="_captcha" value="false" />
     <input type="hidden" name="_next" value="https://modrzejewski.it/contact?sent=1" />
+    <input type="hidden" id="js-check" name="_js_check" value="0" />
     <input type="hidden" id="form-started-at" name="_form_started_at" value="" />
     <input type="text" name="_honey" class="hidden" tabindex="-1" autocomplete="off" />
+    <input
+      type="text"
+      id="company-name"
+      name="company_name"
+      tabindex="-1"
+      autocomplete="off"
+      aria-hidden="true"
+      class="absolute -left-[9999px] opacity-0 pointer-events-none"
+    />
 
     <div>
       <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -73,6 +83,26 @@ const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
       ></textarea>
     </div>
 
+    <div>
+      <label for="privacy-consent" class="flex items-start gap-3 text-sm text-gray-700 dark:text-gray-300">
+        <input
+          id="privacy-consent"
+          name="privacy_consent"
+          type="checkbox"
+          value="accepted"
+          required
+          class="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
+        />
+        <span>
+          I have read and accept the
+          <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" class="font-medium text-brand-navy dark:text-blue-400 hover:underline">
+            Privacy Policy
+          </a>
+          <span class="text-brand-red">*</span>
+        </span>
+      </label>
+    </div>
+
     <button
       type="submit"
       id="contact-submit"
@@ -98,11 +128,17 @@ const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
   const form = document.getElementById('contact-form');
   const submitBtn = document.getElementById('contact-submit');
   const startedAtInput = document.getElementById('form-started-at');
+  const jsCheckInput = document.getElementById('js-check');
+  const companyNameInput = document.getElementById('company-name');
   const successMsg = document.getElementById('form-success');
   const errorMsg = document.getElementById('form-error');
 
   if (startedAtInput) {
     startedAtInput.value = String(Date.now());
+  }
+
+  if (jsCheckInput) {
+    jsCheckInput.value = '1';
   }
 
   if (params.get('sent') === '1') {
@@ -131,6 +167,22 @@ const formSubmitToken = '5cf95266933e1b198dc297aca263db44';
 
     const startedAt = Number.parseInt(startedAtInput?.value || '0', 10);
     const elapsed = Date.now() - startedAt;
+
+    if (jsCheckInput?.value !== '1') {
+      if (errorMsg) {
+        errorMsg.textContent = 'Form validation failed. Please refresh the page and try again.';
+        errorMsg.classList.remove('hidden');
+      }
+      return;
+    }
+
+    if ((companyNameInput instanceof HTMLInputElement) && companyNameInput.value.trim()) {
+      if (errorMsg) {
+        errorMsg.textContent = 'Form validation failed. Please refresh the page and try again.';
+        errorMsg.classList.remove('hidden');
+      }
+      return;
+    }
 
     if (!startedAt || elapsed < 3500) {
       if (errorMsg) {

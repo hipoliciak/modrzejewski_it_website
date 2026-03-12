@@ -11,9 +11,10 @@ interface Props {
   category: string;
   tags: string[];
   image?: string;
+  imageAlt?: string;
 }
 
-const { title, description, pubDate, updatedDate, author, category, tags, image } = Astro.props;
+const { title, description, pubDate, updatedDate, author, category, tags, image, imageAlt } = Astro.props;
 
 const formattedPubDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -63,6 +64,16 @@ const articleSchema = {
       <h1 class="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
         {title}
       </h1>
+      {image && (
+        <figure class="mb-6 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          <img
+            src={image}
+            alt={imageAlt || `${title} cover image`}
+            loading="lazy"
+            class="w-full h-auto object-cover"
+          />
+        </figure>
+      )}
       <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">{description}</p>
       <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 border-t border-b border-gray-200 dark:border-gray-700 py-4">
         <span class="flex items-center gap-1">
@@ -95,9 +106,19 @@ const articleSchema = {
       )}
     </header>
 
-    <div class="prose prose-lg dark:prose-invert prose-headings:font-bold prose-a:text-brand-navy dark:prose-a:text-blue-400 prose-code:text-brand-navy dark:prose-code:text-blue-300 max-w-none">
+    <div class="prose prose-lg dark:prose-invert prose-headings:font-bold prose-a:text-brand-navy dark:prose-a:text-blue-400 prose-code:text-brand-navy dark:prose-code:text-blue-300 prose-pre:text-white [&_pre_code]:!text-white [&_pre_code_span]:!text-white max-w-none">
       <slot />
     </div>
+
+    <aside class="mt-10 rounded-xl border border-slate-300/80 dark:border-slate-600 bg-slate-100 dark:bg-slate-800/80 px-5 py-4 text-sm text-slate-700 dark:text-slate-200">
+      <p class="font-semibold text-slate-900 dark:text-white mb-1">Disclaimer</p>
+      <p>
+        The views expressed in this article are my personal opinions and are provided for general informational purposes only.
+        They do not constitute technical, architectural, legal, or professional advice.
+        If you have any questions about the content or would like to suggest changes or corrections, please reach out to me via the
+        <a href="/contact" class="font-semibold text-brand-navy dark:text-blue-400 hover:underline"> contact form</a>.
+      </p>
+    </aside>
   </article>
 
   <!-- Mermaid.js support -->

@@ -49,26 +49,33 @@ import ContactForm from '../components/ContactForm.astro';
 </Layout>
 
 <script>
-  const contactFormCol = document.getElementById('contact-form-col');
-  const contactPhotoCard = document.getElementById('contact-photo-card');
-
   const syncContactPhotoHeight = () => {
-    if (!contactFormCol || !contactPhotoCard) return;
+    const contactFormWrapper = document.getElementById('contact-form-wrapper');
+    const contactPhotoCard = document.getElementById('contact-photo-card');
+
+    if (!contactFormWrapper || !contactPhotoCard) return;
 
     if (!window.matchMedia('(min-width: 1024px)').matches) {
       contactPhotoCard.style.removeProperty('height');
       return;
     }
 
-    const formHeight = Math.ceil(contactFormCol.getBoundingClientRect().height);
+    const formHeight = Math.ceil(contactFormWrapper.getBoundingClientRect().height);
     contactPhotoCard.style.height = `${formHeight}px`;
   };
 
-  syncContactPhotoHeight();
-  window.addEventListener('resize', syncContactPhotoHeight, { passive: true });
+  const initContactPhotoSync = () => {
+    syncContactPhotoHeight();
+    requestAnimationFrame(syncContactPhotoHeight);
+  };
 
-  if (contactFormCol && 'ResizeObserver' in window) {
+  initContactPhotoSync();
+  window.addEventListener('resize', syncContactPhotoHeight, { passive: true });
+  document.addEventListener('astro:page-load', initContactPhotoSync);
+
+  const contactFormWrapper = document.getElementById('contact-form-wrapper');
+  if (contactFormWrapper && 'ResizeObserver' in window) {
     const contactResizeObserver = new ResizeObserver(syncContactPhotoHeight);
-    contactResizeObserver.observe(contactFormCol);
+    contactResizeObserver.observe(contactFormWrapper);
   }
 </script>

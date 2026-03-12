@@ -5,19 +5,22 @@ pubDate: 2026-03-11
 author: "Dominik Modrzejewski"
 category: "Business Model"
 featured: true
-tags: ["Data 360", "Pricing", "Agentforce", "Agentic Enterprise"]
+featuredOrder: 2
+tags: ["Data 360", "Pricing", "Agentforce", "Agentic Enterprise", "AI"]
+image: ./a-pivotal-shift-in-salesforce-data-cloud-pricing/cover-data-cloud-pricing.png
+imageAlt: "Abstract cover visualizing Salesforce Data 360 pricing dynamics with growth and discount curves"
 draft: false
 ---
 
-As a Solution Architect focusing on enterprise data strategies, I’m constantly analyzing how platforms adapt to the scaling realities of our clients. The complexity and unpredictability of consumption-based models can be a significant barrier to enterprise adoption, especially when trying to prove ROI on large-scale data unification initiatives.
+As a Data 360 solution architect, I’m constantly analyzing how this platform adapts to the scaling realities of the clients. The complexity and unpredictability of consumption-based models can be a significant barrier to enterprise adoption, especially when trying to prove ROI on large-scale data unification initiatives.
 
-I recently had the opportunity to dive deep into Salesforce's latest update on the Data 360 pricing model. My primary takeaway is that this is a definitive step in the right direction. It moves beyond complex metered billing and introduces two essential structural changes—Zero Cost Batch Ingestion and Predictable Profile Pricing—that align platform costs with business value, not just data volume.
+The latest update on the Data 360 pricing model brings a pivotal shift in this space. It moves beyond complex metered billing and introduces two essential structural changes: Zero Cost Batch Ingestion and Predictable Profile Pricing. They align platform costs with business value, not just data volume.
 
-I’ve compiled my notes and analysis from the latest webinar into this guide, so you can understand the strategic impact on your Data 360 roadmap. This is a post written by an architect, for enterprise architects and CTOs.
+I’ve compiled my notes and analysis from the latest webinar into this guide, so you can understand the strategic impact on your Data 360 roadmap.
 
 ## The Friction: The Old Model’s Toll Booth Analogy
 
-For a long time, adopting Data 360 felt like navigating a series of toll booths. The biggest challenge wasn't the platform’s potential; it was the "ingestion tax." Whether you were replicating data for unification or using federation, you paid to simply get the data onto the platform. When costs rise linearly with data volume before any processing begins, enterprise scaling becomes a financial gamble.
+For a long time, adopting Data 360 felt like navigating a series of toll booths. The biggest challenge wasn't the platform’s potential. It was the "ingestion tax." Whether you were replicating data for unification or using federation, you paid to simply get the data onto the platform. When costs rise linearly with data volume before any processing begins, enterprise scaling becomes a financial gamble.
 
 Imagine attempting to unify data from databases, multiple apps, and legacy systems, only for your spend to shoot up unpredictability before you’ve even segmented your first customer. This friction is often visualized as complex pipelines blocked by numerous payment checkpoints.
 
@@ -31,16 +34,16 @@ The new Data 360 pricing model is built around two major accelerators that strea
 
 This is the most impactful immediate change: Batch Data Ingestion and Zero Copy Federation are now entirely FREE.
 
-What does this mean for your architecture? You can now build massive, complex data pipelines connecting databases, applications, and legacy systems into Data 360 without watching an ingestion meter spin.
+What does this mean for your architecture? You can now connect in Data 360 databases, applications, and legacy systems you need for your activation use cases without watching an ingestion meter spin.
 
 - **Frictionless Ingestion:** You no longer pay credits to replicate batch data.
-- **Decoupled Costs:** This finally decouples data storage and access from data processing. You use credits for high-value operations—like profile unification, complex segmentation, and activation—rather than just "paying to look" at your source data.
+- **Decoupled Costs:** This finally decouples data ingestion and access from data processing. You use credits for high-value operations, like profile unification, complex segmentation, and activation, rather than just "paying to look" at your source data.
 
 This single change allows architects to confidently design comprehensive data foundations, focusing on the quality and breadth of the data being unified, rather than the initial cost of aggregation.
 
 ### Pillar 2: The Introduction of Predictable Profile Pricing
 
-For CTOs who prioritize stable financial planning, the new Data 360 Profiles model is an architecture-first breakthrough. Instead of paying consumption-based credits for the entire platform, you can lock in a core cost based on your predictable profile volume.
+For clients who prioritize stable financial planning, the new Data 360 Profiles model is an architecture-first breakthrough. Instead of paying consumption-based credits for the entire platform, you can lock in a core cost based on your predictable profile volume.
 
 This model is a bundled approach, simplifying your core costs:
 
@@ -61,20 +64,14 @@ The universal currency remains Flex Credits. The base rate is fixed:
 
 - **Fixed Rate:** $500 per 100,000 Flex Credits.
 
-The revolutionary addition is Automatic Volume-Based Discounts. In the old model, higher volume usually meant more cost. Now, higher volume automatically triggers deeper scaling discounts. Salesforce is incentivizing expansion.
+The revolutionary addition is Automatic Volume-Based Discounts. In the old model, higher volume usually meant more cost. Now, higher volume automatically triggers deeper scaling discounts. A great example is how the cost for Data 360 Prep (processing data rows) drops dramatically from 40 credits to as low as 8 credits per 1M rows as you hit successive usage tiers. You can visualize this as a dramatic saving curve as adoption scales.
 
-- **Scaling Incentives:** The more you consume, the lower the credit cost per action becomes. A great example from the webinar highlights how the cost for Data 360 Prep (processing data rows) drops dramatically from 40 credits to as low as 8 credits per 1M rows as you hit successive usage tiers. You can visualize this as a dramatic saving curve as adoption scales.
+It's also important to mention that Flex Credits are managed in a single fungible Digital Wallet across Data 360 and Agentforce. This way Salesforce is incentivizing client expansion towards the goal of Agentic Enterprise.
 
-- **Fungibility and the Unified Wallet:** Credits are managed in a single, fungible Digital Wallet. They are tracked and unified across both Data 360 operations and Agentforce, allowing for seamless budget allocation.
-
-## The New Data 360 Roadmap: Simplified Architecture, Predictable Scale
-
-The new pricing model significantly reduces the initial hurdle for Data 360 adoption. We can now design, prototype, and build unified data foundations with minimal cost fear.
-
-## TL;DR: A Pivotal Evolution
+## A Pivotal Evolution
 
 By unmetering ingestion and offering bundled profile tiers, Salesforce is ensuring that Data 360 spend is directly tied to business value realization, rather than just basic data movement.
 
 For enterprise teams, this means faster proof-of-value, easier enterprise scaling, and more precise financial forecasting. The focus shifts from optimizing ingestion credits to optimizing high-value processing and building powerful agentic use cases.
 
-If you are exploring Data 360, now is the time to reassess your roadmap against this new, architect-friendly model. Contact our strategy team to evaluate how these changes affect your existing infrastructure and future deployment plans.
+If you are exploring Data 360, now is the time to reassess your roadmap against this new, architect-friendly model.

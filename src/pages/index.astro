@@ -10,10 +10,6 @@ const featuredProjects = allProjects
   .filter((p) => p.data.featured)
   .sort((a, b) => a.data.order - b.data.order);
 const showProjectArrows = featuredProjects.length > 3;
-const enableInfiniteProjects = featuredProjects.length > 3;
-const projectsForCarousel = enableInfiniteProjects
-  ? [...featuredProjects, ...featuredProjects, ...featuredProjects]
-  : featuredProjects;
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const latestPosts = allPosts
@@ -21,12 +17,22 @@ const latestPosts = allPosts
   .slice(0, 3);
 const featuredPosts = allPosts
   .filter((p) => p.data.featured)
-  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .sort((a, b) => {
+    const orderA = a.data.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.data.featuredOrder ?? Number.MAX_SAFE_INTEGER;
+    if (orderA !== orderB) return orderA - orderB;
+    return b.data.pubDate.getTime() - a.data.pubDate.getTime();
+  })
   .slice(0, 3);
 const homepagePosts = featuredPosts.length > 0 ? featuredPosts : latestPosts;
+const showArticleArrows = homepagePosts.length > 3;
 
 const projectTileWidthClass = 'w-[88%] sm:w-[62%] lg:w-[calc(33.333%-0.67rem)]';
 const projectsTrackClass = showProjectArrows
+  ? 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
+  : 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
+const articleTileWidthClass = 'w-[88%] sm:w-[62%] lg:w-[calc(33.333%-0.67rem)]';
+const articlesTrackClass = showArticleArrows
   ? 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
   : 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
 ---
@@ -62,7 +68,7 @@ const projectsTrackClass = showProjectArrows
             type="button"
             id="projects-prev"
             aria-label="Previous project"
-            class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow"
+            class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow disabled:hidden"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -72,11 +78,9 @@ const projectsTrackClass = showProjectArrows
 
         <div
           id="projects-carousel"
-          data-infinite={enableInfiniteProjects ? 'true' : 'false'}
-          data-set-size={featuredProjects.length}
           class={projectsTrackClass}
         >
-          {projectsForCarousel.map((project) => (
+          {featuredProjects.map((project) => (
             <div class:list={['snap-start shrink-0', projectTileWidthClass]}>
               <ProjectCard
                 title={project.data.title}
@@ -84,6 +88,8 @@ const projectsTrackClass = showProjectArrows
                 tags={project.data.tags}
                 github={project.data.github}
                 demo={project.data.demo}
+                image={project.data.image?.src}
+                imageAlt={project.data.imageAlt}
                 slug={project.id.replace(/\.(md|mdx)$/, '')}
               />
             </div>
@@ -95,7 +101,7 @@ const projectsTrackClass = showProjectArrows
             type="button"
             id="projects-next"
             aria-label="Next project"
-            class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow"
+            class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow disabled:hidden"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -125,48 +131,61 @@ const projectsTrackClass = showProjectArrows
         </div>
       </div>
 
-      <div class="md:hidden flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {homepagePosts.map((post) => (
-          <div class="snap-start shrink-0 w-[88%] sm:w-[62%]">
-            <BlogCard
-              title={post.data.title}
-              description={post.data.description}
-              category={post.data.category}
-              tags={post.data.tags}
-              slug={post.id.replace(/\.(md|mdx)$/, '')}
-            />
-          </div>
-        ))}
-      </div>
+      <div class="relative">
+        {showArticleArrows && (
+          <button
+            type="button"
+            id="articles-prev"
+            aria-label="Previous article"
+            class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow disabled:hidden"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
 
-      <div class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {homepagePosts.map((post) => (
-          <BlogCard
-            title={post.data.title}
-            description={post.data.description}
-            category={post.data.category}
-            tags={post.data.tags}
-            slug={post.id.replace(/\.(md|mdx)$/, '')}
-          />
-        ))}
+        <div id="articles-carousel" class={articlesTrackClass}>
+          {homepagePosts.map((post) => (
+            <div class:list={['snap-start shrink-0', articleTileWidthClass]}>
+              <BlogCard
+                title={post.data.title}
+                description={post.data.description}
+                category={post.data.category}
+                tags={post.data.tags}
+                image={post.data.image?.src}
+                imageAlt={post.data.imageAlt}
+                slug={post.id.replace(/\.(md|mdx)$/, '')}
+              />
+            </div>
+          ))}
+        </div>
+
+        {showArticleArrows && (
+          <button
+            type="button"
+            id="articles-next"
+            aria-label="Next article"
+            class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-5 z-10 p-2 rounded-full border border-gray-300 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-800 transition-colors shadow disabled:hidden"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   </section>
 
   <script>
     const carousel = document.getElementById('projects-carousel');
-    const enableInfiniteProjects = carousel?.getAttribute('data-infinite') === 'true';
-    const setSize = Number.parseInt(carousel?.getAttribute('data-set-size') || '0', 10);
     const prevBtn = document.getElementById('projects-prev');
     const nextBtn = document.getElementById('projects-next');
 
     let cardStep = 360;
-    let setWidth = 0;
 
-    // With 3 repeated sets rendered server-side, keep viewport on middle set.
-    const setupInfiniteCarousel = () => {
-      if (!enableInfiniteProjects || !carousel || setSize < 2) return;
-
+    const setupCarousel = () => {
+      if (!carousel) return;
       const cards = [...carousel.querySelectorAll(':scope > .snap-start')];
       const firstCard = cards[0];
       if (!firstCard) return;
@@ -176,8 +195,6 @@ const projectsTrackClass = showProjectArrows
       const gap = Number.parseFloat(style.columnGap || style.gap || '16') || 16;
 
       cardStep = cardRect.width + gap;
-      setWidth = cardStep * setSize;
-      carousel.scrollLeft = setWidth;
     };
 
     const getScrollStep = () => {
@@ -185,20 +202,31 @@ const projectsTrackClass = showProjectArrows
       return cardStep;
     };
 
-    const handleLoopEdges = () => {
-      if (!carousel || setWidth === 0) return;
+    const updateButtonStates = () => {
+      if (!carousel) return;
 
-      if (carousel.scrollLeft <= setWidth * 0.5) {
-        carousel.scrollLeft += setWidth;
-      } else if (carousel.scrollLeft >= setWidth * 1.5) {
-        carousel.scrollLeft -= setWidth;
+      const maxScrollLeft = Math.max(0, carousel.scrollWidth - carousel.clientWidth);
+      const atStart = carousel.scrollLeft <= 2;
+      const atEnd = carousel.scrollLeft >= maxScrollLeft - 2;
+
+      if (prevBtn instanceof HTMLButtonElement) {
+        prevBtn.disabled = atStart;
+      }
+
+      if (nextBtn instanceof HTMLButtonElement) {
+        nextBtn.disabled = atEnd;
       }
     };
 
-    if (enableInfiniteProjects) {
-      setupInfiniteCarousel();
-      carousel?.addEventListener('scroll', handleLoopEdges, { passive: true });
-    }
+    setupCarousel();
+    updateButtonStates();
+
+    window.addEventListener('resize', () => {
+      setupCarousel();
+      updateButtonStates();
+    });
+
+    carousel?.addEventListener('scroll', updateButtonStates, { passive: true });
 
     prevBtn?.addEventListener('click', () => {
       carousel?.scrollBy({ left: -getScrollStep(), behavior: 'smooth' });
@@ -206,6 +234,63 @@ const projectsTrackClass = showProjectArrows
 
     nextBtn?.addEventListener('click', () => {
       carousel?.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
+    });
+
+    const articlesCarousel = document.getElementById('articles-carousel');
+    const articlesPrevBtn = document.getElementById('articles-prev');
+    const articlesNextBtn = document.getElementById('articles-next');
+
+    let articleCardStep = 360;
+
+    const setupArticlesCarousel = () => {
+      if (!articlesCarousel) return;
+      const cards = [...articlesCarousel.querySelectorAll(':scope > .snap-start')];
+      const firstCard = cards[0];
+      if (!firstCard) return;
+
+      const cardRect = firstCard.getBoundingClientRect();
+      const style = window.getComputedStyle(articlesCarousel);
+      const gap = Number.parseFloat(style.columnGap || style.gap || '16') || 16;
+      articleCardStep = cardRect.width + gap;
+    };
+
+    const getArticlesScrollStep = () => {
+      if (!articlesCarousel) return 360;
+      return articleCardStep;
+    };
+
+    const updateArticlesButtonStates = () => {
+      if (!articlesCarousel) return;
+
+      const maxScrollLeft = Math.max(0, articlesCarousel.scrollWidth - articlesCarousel.clientWidth);
+      const atStart = articlesCarousel.scrollLeft <= 2;
+      const atEnd = articlesCarousel.scrollLeft >= maxScrollLeft - 2;
+
+      if (articlesPrevBtn instanceof HTMLButtonElement) {
+        articlesPrevBtn.disabled = atStart;
+      }
+
+      if (articlesNextBtn instanceof HTMLButtonElement) {
+        articlesNextBtn.disabled = atEnd;
+      }
+    };
+
+    setupArticlesCarousel();
+    updateArticlesButtonStates();
+
+    articlesCarousel?.addEventListener('scroll', updateArticlesButtonStates, { passive: true });
+
+    articlesPrevBtn?.addEventListener('click', () => {
+      articlesCarousel?.scrollBy({ left: -getArticlesScrollStep(), behavior: 'smooth' });
+    });
+
+    articlesNextBtn?.addEventListener('click', () => {
+      articlesCarousel?.scrollBy({ left: getArticlesScrollStep(), behavior: 'smooth' });
+    });
+
+    window.addEventListener('resize', () => {
+      setupArticlesCarousel();
+      updateArticlesButtonStates();
     });
   </script>
 </Layout>

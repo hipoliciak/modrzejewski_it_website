@@ -1,7 +1,7 @@
 ---
-title: "PKO BP: Digital Banking Transformation (IKO and BLIK)"
-description: "Supported the digital banking transformation by co-launching the IKO and BLIK platforms, collaborating with IT and data teams to ensure secure, compliant data flows and system integrations across banking channels."
-tags: ["Banking", "Digital Transformation", "Data Integration", "Compliance", "IKO", "BLIK"]
+title: "Digital Transformation of the Largest Bank in CEE"
+description: "Supported the digital transformation of the Polish PKO BP bank by launching its mobile banking app (IKO) and the mobile payments solution (BLIK)."
+tags: ["Banking", "Digital Transformation", "Mobile App", "Digital Channels"]
 featured: true
 order: 3
 ---

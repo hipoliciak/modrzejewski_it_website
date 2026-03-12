@@ -69,6 +69,8 @@ const sortedTags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1] || a[0].l
             pubDate={post.data.pubDate}
             category={post.data.category}
             tags={post.data.tags}
+            image={post.data.image?.src}
+            imageAlt={post.data.imageAlt}
             slug={post.id.replace(/\.(md|mdx)$/, '')}
           />
         </div>
