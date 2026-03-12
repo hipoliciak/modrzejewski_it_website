@@ -13,6 +13,8 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       VPS_HOST: ${{ secrets.VPS_HOST }}
       VPS_PORT: ${{ secrets.VPS_PORT }}
@@ -23,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -41,7 +43,7 @@ jobs:
         run: tar -czf /tmp/modrzejewski_it_website.tar.gz -C dist .
 
       - name: Start SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
+        uses: webfactory/ssh-agent@v0.10.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
 
@@ -58,35 +60,38 @@ jobs:
 
       - name: Activate release atomically
         run: |
-          ssh -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            "REMOTE_WEBROOT='$REMOTE_WEBROOT' KEEP_BACKUPS='${KEEP_BACKUPS:-5}' REMOTE_ARCHIVE='$REMOTE_ARCHIVE' /bin/bash -s" <<'EOF'
+          ssh -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" /bin/bash -se -- \
+            "$REMOTE_WEBROOT" "${KEEP_BACKUPS:-5}" "$REMOTE_ARCHIVE" <<'EOF'
           set -euo pipefail
 
+          remote_webroot="$1"
+          keep_backups="$2"
+          remote_archive="$3"
+
           timestamp="$(date +%Y%m%d_%H%M%S)"
-          release_dir="${REMOTE_WEBROOT}_new_${timestamp}"
-          backup_dir="${REMOTE_WEBROOT}_backup_${timestamp}"
+          release_dir="${remote_webroot}_new_${timestamp}"
+          backup_dir="${remote_webroot}_backup_${timestamp}"
 
           mkdir -p "$release_dir"
-          tar -xzf "${REMOTE_ARCHIVE}" -C "$release_dir"
+          tar -xzf "$remote_archive" -C "$release_dir"
 
-          if [[ -d "${REMOTE_WEBROOT}" ]]; then
-            mv "${REMOTE_WEBROOT}" "$backup_dir"
+          if [[ -d "$remote_webroot" ]]; then
+            mv "$remote_webroot" "$backup_dir"
           fi
 
-          mv "$release_dir" "${REMOTE_WEBROOT}"
-          rm -f "${REMOTE_ARCHIVE}"
+          mv "$release_dir" "$remote_webroot"
+          rm -f "$remote_archive"
 
           if command -v systemctl >/dev/null 2>&1; then
-            if systemctl list-unit-files --type=service | grep -q '^nginx\.service'; then
-              systemctl reload nginx
+            if systemctl list-unit-files --type=service 2>/dev/null | grep -q '^nginx\.service'; then
+              systemctl reload nginx || echo "[remote] nginx reload failed, skipping."
             else
               echo "[remote] nginx.service not found, skipping reload."
             fi
           fi
 
-          keep_backups="${KEEP_BACKUPS:-5}"
           if [[ "$keep_backups" =~ ^[0-9]+$ ]] && (( keep_backups >= 0 )); then
-            mapfile -t backups < <(ls -1dt "${REMOTE_WEBROOT}_backup_"* 2>/dev/null || true)
+            mapfile -t backups < <(ls -1dt "${remote_webroot}_backup_"* 2>/dev/null || true)
             if (( ${#backups[@]} > keep_backups )); then
               for old in "${backups[@]:keep_backups}"; do
                 rm -rf "$old"
