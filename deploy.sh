@@ -1,20 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Deploy Astro static site to Mikr.us VPS using scp + atomic release switch.
-# Usage:
-#   ./deploy.sh
-# Optional env overrides:
-#   VPS_HOST, VPS_PORT, VPS_USER, REMOTE_WEBROOT, KEEP_BACKUPS, SKIP_NPM_CI
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEPLOY_ENV_FILE="${DEPLOY_ENV_FILE:-${SCRIPT_DIR}/.deploy.env}"
 
-VPS_HOST="${VPS_HOST:-aneta145.mikrus.xyz}"
-VPS_PORT="${VPS_PORT:-10145}"
-VPS_USER="${VPS_USER:-root}"
-REMOTE_WEBROOT="${REMOTE_WEBROOT:-/var/www/html}"
+if [[ ! -f "$DEPLOY_ENV_FILE" ]]; then
+  echo "[error] Missing deploy env file: $DEPLOY_ENV_FILE"
+  echo "Create it (example below):"
+  echo "  VPS_HOST=..."
+  echo "  VPS_PORT=..."
+  echo "  VPS_USER=..."
+  echo "  REMOTE_WEBROOT=..."
+  echo "  KEEP_BACKUPS=5"
+  echo "  SKIP_NPM_CI=0"
+  exit 1
+fi
+
+set -a
+source "$DEPLOY_ENV_FILE"
+set +a
+
+: "${VPS_HOST:?VPS_HOST is required in deploy env file}"
+: "${VPS_PORT:?VPS_PORT is required in deploy env file}"
+: "${VPS_USER:?VPS_USER is required in deploy env file}"
+: "${REMOTE_WEBROOT:?REMOTE_WEBROOT is required in deploy env file}"
 KEEP_BACKUPS="${KEEP_BACKUPS:-5}"
 SKIP_NPM_CI="${SKIP_NPM_CI:-0}"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TMP_ARCHIVE="/tmp/personal_website_$(date +%Y%m%d_%H%M%S).tar.gz"
 REMOTE_ARCHIVE="/tmp/personal_website_deploy.tar.gz"
 
@@ -24,44 +36,19 @@ echo "[config] VPS: ${VPS_USER}@${VPS_HOST}:${VPS_PORT}"
 echo "[config] Remote web root: ${REMOTE_WEBROOT}"
 echo "[config] Remote upload tmp: ${REMOTE_ARCHIVE}"
 
-echo "[preflight] Verifying remote paths..."
-ssh -p "$VPS_PORT" "${VPS_USER}@${VPS_HOST}" /bin/bash <<EOF
-set -euo pipefail
-
-REMOTE_WEBROOT="${REMOTE_WEBROOT}"
-REMOTE_ARCHIVE="${REMOTE_ARCHIVE}"
-
-echo "[remote] pwd: \$(pwd)"
-echo "[remote] home: \$HOME"
-echo "[remote] /tmp: \$(ls -ld /tmp)"
-
-if [[ ! -d "\$(dirname "\$REMOTE_WEBROOT")" ]]; then
-  echo "[remote][error] Parent directory does not exist: \$(dirname "\$REMOTE_WEBROOT")"
-  exit 1
-fi
-
-if [[ ! -w "\$(dirname "\$REMOTE_WEBROOT")" ]]; then
-  echo "[remote][error] Parent directory is not writable: \$(dirname "\$REMOTE_WEBROOT")"
-  exit 1
-fi
-
-echo "[remote] Target parent dir OK: \$(dirname "\$REMOTE_WEBROOT")"
-echo "[remote] Archive will be uploaded to: \$REMOTE_ARCHIVE"
-EOF
-
-echo "[1/5] Building site..."
+echo "[1/4] Building site..."
 if [[ "$SKIP_NPM_CI" != "1" ]]; then
   npm ci
 fi
 npm run build
 
-echo "[2/5] Packaging dist -> $TMP_ARCHIVE"
+echo "[2/4] Packaging dist -> $TMP_ARCHIVE"
 tar -czf "$TMP_ARCHIVE" -C dist .
 
-echo "[3/5] Uploading archive via scp to ${VPS_USER}@${VPS_HOST}:${REMOTE_ARCHIVE}"
+echo "[3/4] Uploading archive via scp to ${VPS_USER}@${VPS_HOST}:${REMOTE_ARCHIVE}"
 scp -P "$VPS_PORT" "$TMP_ARCHIVE" "${VPS_USER}@${VPS_HOST}:${REMOTE_ARCHIVE}"
 
-echo "[4/5] Activating new release atomically on VPS..."
+echo "[4/4] Activating new release atomically on VPS..."
 ssh -p "$VPS_PORT" "${VPS_USER}@${VPS_HOST}" /bin/bash <<EOF
 set -euo pipefail
 
@@ -102,7 +89,7 @@ if [[ "\$KEEP_BACKUPS" =~ ^[0-9]+$ ]] && (( KEEP_BACKUPS >= 0 )); then
 fi
 EOF
 
-echo "[5/5] Cleaning up local temp archive"
+echo "[cleanup] Cleaning up local temp archive"
 rm -f "$TMP_ARCHIVE"
 
 echo "Deploy complete: https://modrzejewski.it"
