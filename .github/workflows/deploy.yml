@@ -22,6 +22,13 @@ jobs:
       REMOTE_WEBROOT: ${{ secrets.REMOTE_WEBROOT }}
       KEEP_BACKUPS: ${{ secrets.KEEP_BACKUPS }}
       REMOTE_ARCHIVE: /tmp/modrzejewski_it_website_deploy.tar.gz
+      PUBLIC_GISCUS_REPO: ${{ secrets.PUBLIC_GISCUS_REPO }}
+      PUBLIC_GISCUS_REPO_ID: ${{ secrets.PUBLIC_GISCUS_REPO_ID }}
+      PUBLIC_GISCUS_CATEGORY: ${{ secrets.PUBLIC_GISCUS_CATEGORY }}
+      PUBLIC_GISCUS_CATEGORY_ID: ${{ secrets.PUBLIC_GISCUS_CATEGORY_ID }}
+      PUBLIC_GISCUS_MAPPING: ${{ secrets.PUBLIC_GISCUS_MAPPING }}
+      PUBLIC_GISCUS_INPUT_POSITION: ${{ secrets.PUBLIC_GISCUS_INPUT_POSITION }}
+      PUBLIC_GISCUS_DARK_THEME: ${{ secrets.PUBLIC_GISCUS_DARK_THEME }}
 
     steps:
       - name: Checkout repository

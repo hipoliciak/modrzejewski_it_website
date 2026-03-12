@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_GISCUS_MAPPING?: string;
   readonly PUBLIC_GISCUS_INPUT_POSITION?: string;
   readonly PUBLIC_GISCUS_THEME?: string;
+	readonly PUBLIC_GISCUS_DARK_THEME?: string;
 }
 
 interface ImportMeta {
