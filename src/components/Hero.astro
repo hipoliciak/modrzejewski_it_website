@@ -52,8 +52,14 @@ import profilePhoto from '../assets/images/Dominik_Modrzejewski.jpg';
               src={profilePhoto}
               alt="Portrait of Dominik Modrzejewski"
               format="webp"
+              width={800}
+              height={800}
+              widths={[320, 480, 640, 800]}
+              sizes="(max-width: 799px) 0px, (min-width: 1280px) 420px, 34vw"
+              quality={70}
               class="h-full w-full object-cover"
-              loading="lazy"
+              loading="eager"
+              fetchpriority="high"
             />
           </div>
         </div>
@@ -67,17 +73,33 @@ import profilePhoto from '../assets/images/Dominik_Modrzejewski.jpg';
   const rotatingEl = document.getElementById('hero-rotating-text');
   const heroCopyBlock = document.getElementById('hero-copy-block');
   const heroPhotoWrap = document.getElementById('hero-photo-wrap');
+  const desktopHeroMediaQuery = window.matchMedia('(min-width: 800px)');
+  let isHeroSyncScheduled = false;
+  let lastHeroPhotoHeight = 0;
 
   const syncHeroPhotoHeight = () => {
+    isHeroSyncScheduled = false;
     if (!heroCopyBlock || !heroPhotoWrap) return;
 
-    if (!window.matchMedia('(min-width: 800px)').matches) {
-      heroPhotoWrap.style.removeProperty('height');
+    if (!desktopHeroMediaQuery.matches) {
+      if (heroPhotoWrap.style.height) {
+        heroPhotoWrap.style.removeProperty('height');
+      }
+      lastHeroPhotoHeight = 0;
       return;
     }
 
-    const copyHeight = Math.ceil(heroCopyBlock.getBoundingClientRect().height);
+    const copyHeight = Math.ceil(heroCopyBlock.offsetHeight);
+    if (copyHeight === lastHeroPhotoHeight) return;
+
     heroPhotoWrap.style.height = `${copyHeight}px`;
+    lastHeroPhotoHeight = copyHeight;
+  };
+
+  const scheduleHeroPhotoHeightSync = () => {
+    if (isHeroSyncScheduled) return;
+    isHeroSyncScheduled = true;
+    window.requestAnimationFrame(syncHeroPhotoHeight);
   };
 
   if (rotatingEl) {
@@ -93,11 +115,17 @@ import profilePhoto from '../assets/images/Dominik_Modrzejewski.jpg';
     }, 2200);
   }
 
-  syncHeroPhotoHeight();
-  window.addEventListener('resize', syncHeroPhotoHeight, { passive: true });
+  scheduleHeroPhotoHeightSync();
+  window.addEventListener('resize', scheduleHeroPhotoHeightSync, { passive: true });
+
+  if ('addEventListener' in desktopHeroMediaQuery) {
+    desktopHeroMediaQuery.addEventListener('change', scheduleHeroPhotoHeightSync);
+  }
 
   if (heroCopyBlock && 'ResizeObserver' in window) {
-    const heroResizeObserver = new ResizeObserver(syncHeroPhotoHeight);
+    const heroResizeObserver = new ResizeObserver(() => {
+      scheduleHeroPhotoHeightSync();
+    });
     heroResizeObserver.observe(heroCopyBlock);
   }
 </script>

@@ -181,8 +181,13 @@ const articlesTrackClass = showArticleArrows
     const carousel = document.getElementById('projects-carousel');
     const prevBtn = document.getElementById('projects-prev');
     const nextBtn = document.getElementById('projects-next');
+    const articlesCarousel = document.getElementById('articles-carousel');
+    const articlesPrevBtn = document.getElementById('articles-prev');
+    const articlesNextBtn = document.getElementById('articles-next');
 
     let cardStep = 360;
+    let articleCardStep = 360;
+    let resizeFrameId = 0;
 
     const setupCarousel = () => {
       if (!carousel) return;
@@ -190,11 +195,10 @@ const articlesTrackClass = showArticleArrows
       const firstCard = cards[0];
       if (!firstCard) return;
 
-      const cardRect = firstCard.getBoundingClientRect();
       const style = window.getComputedStyle(carousel);
       const gap = Number.parseFloat(style.columnGap || style.gap || '16') || 16;
 
-      cardStep = cardRect.width + gap;
+      cardStep = firstCard.clientWidth + gap;
     };
 
     const getScrollStep = () => {
@@ -221,11 +225,6 @@ const articlesTrackClass = showArticleArrows
     setupCarousel();
     updateButtonStates();
 
-    window.addEventListener('resize', () => {
-      setupCarousel();
-      updateButtonStates();
-    });
-
     carousel?.addEventListener('scroll', updateButtonStates, { passive: true });
 
     prevBtn?.addEventListener('click', () => {
@@ -236,22 +235,15 @@ const articlesTrackClass = showArticleArrows
       carousel?.scrollBy({ left: getScrollStep(), behavior: 'smooth' });
     });
 
-    const articlesCarousel = document.getElementById('articles-carousel');
-    const articlesPrevBtn = document.getElementById('articles-prev');
-    const articlesNextBtn = document.getElementById('articles-next');
-
-    let articleCardStep = 360;
-
     const setupArticlesCarousel = () => {
       if (!articlesCarousel) return;
       const cards = [...articlesCarousel.querySelectorAll(':scope > .snap-start')];
       const firstCard = cards[0];
       if (!firstCard) return;
 
-      const cardRect = firstCard.getBoundingClientRect();
       const style = window.getComputedStyle(articlesCarousel);
       const gap = Number.parseFloat(style.columnGap || style.gap || '16') || 16;
-      articleCardStep = cardRect.width + gap;
+      articleCardStep = firstCard.clientWidth + gap;
     };
 
     const getArticlesScrollStep = () => {
@@ -288,9 +280,18 @@ const articlesTrackClass = showArticleArrows
       articlesCarousel?.scrollBy({ left: getArticlesScrollStep(), behavior: 'smooth' });
     });
 
-    window.addEventListener('resize', () => {
-      setupArticlesCarousel();
-      updateArticlesButtonStates();
-    });
+    const handleResize = () => {
+      if (resizeFrameId) return;
+
+      resizeFrameId = window.requestAnimationFrame(() => {
+        setupCarousel();
+        updateButtonStates();
+        setupArticlesCarousel();
+        updateArticlesButtonStates();
+        resizeFrameId = 0;
+      });
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
   </script>
 </Layout>
