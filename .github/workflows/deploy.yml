@@ -21,6 +21,7 @@ jobs:
       VPS_USER: ${{ secrets.VPS_USER }}
       REMOTE_WEBROOT: ${{ secrets.REMOTE_WEBROOT }}
       KEEP_BACKUPS: ${{ secrets.KEEP_BACKUPS }}
+      LOCAL_ARCHIVE: /tmp/modrzejewski_it_website.tar.gz
       REMOTE_ARCHIVE: /tmp/modrzejewski_it_website_deploy.tar.gz
       PUBLIC_GISCUS_REPO: ${{ secrets.PUBLIC_GISCUS_REPO }}
       PUBLIC_GISCUS_REPO_ID: ${{ secrets.PUBLIC_GISCUS_REPO_ID }}
@@ -37,7 +38,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 22.12.0
           cache: npm
 
       - name: Install dependencies
@@ -47,7 +48,7 @@ jobs:
         run: npm run build
 
       - name: Package dist
-        run: tar -czf /tmp/modrzejewski_it_website.tar.gz -C dist .
+        run: tar -czf "$LOCAL_ARCHIVE" -C dist .
 
       - name: Start SSH agent
         uses: webfactory/ssh-agent@v0.10.0
@@ -63,7 +64,7 @@ jobs:
 
       - name: Upload release archive
         run: |
-          scp -P "$VPS_PORT" /tmp/modrzejewski_it_website.tar.gz "$VPS_USER@$VPS_HOST:$REMOTE_ARCHIVE"
+          scp -P "$VPS_PORT" "$LOCAL_ARCHIVE" "$VPS_USER@$VPS_HOST:$REMOTE_ARCHIVE"
 
       - name: Activate release atomically
         run: |
@@ -108,4 +109,4 @@ jobs:
           EOF
 
       - name: Cleanup local archive
-        run: rm -f /tmp/modrzejewski_it_website.tar.gz
+        run: rm -f "$LOCAL_ARCHIVE"
