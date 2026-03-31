@@ -22,19 +22,18 @@ const featuredPosts = allPosts
     const orderB = b.data.featuredOrder ?? Number.MAX_SAFE_INTEGER;
     if (orderA !== orderB) return orderA - orderB;
     return b.data.pubDate.getTime() - a.data.pubDate.getTime();
-  })
-  .slice(0, 3);
+  });
 const homepagePosts = featuredPosts.length > 0 ? featuredPosts : latestPosts;
 const showArticleArrows = homepagePosts.length > 3;
 
 const projectTileWidthClass = 'w-[88%] sm:w-[62%] lg:w-[calc(33.333%-0.67rem)]';
 const projectsTrackClass = showProjectArrows
-  ? 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
-  : 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
+  ? 'flex gap-4 overflow-x-auto pt-1 pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
+  : 'flex gap-4 overflow-x-auto pt-1 pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
 const articleTileWidthClass = 'w-[88%] sm:w-[62%] lg:w-[calc(33.333%-0.67rem)]';
 const articlesTrackClass = showArticleArrows
-  ? 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
-  : 'flex gap-4 overflow-x-auto pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
+  ? 'flex gap-4 overflow-x-auto pt-1 pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden'
+  : 'flex gap-4 overflow-x-auto pt-1 pb-1 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:overflow-visible lg:snap-none lg:justify-between';
 ---
 
 <Layout

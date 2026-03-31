@@ -23,6 +23,14 @@ Primary topic: Salesforce solution architecture, integration, and enterprise dat
 	- https://modrzejewski.it/tags/marketing-cloud
 
 ## Blog Entries
+### Server-Side Processing of Form Handlers in Marketing Cloud Next
+- URL: https://modrzejewski.it/blog/server-side-processing-of-form-handlers-in-marketing-cloud-next
+- Category: Guides
+- Published: 2026-03-31
+- Author: Dominik Modrzejewski
+- Tags: Marketing Cloud, Form Handler, Flow, Automation, OAuth
+- Summary: A practical end-to-end implementation guide for securely submitting external form data to Marketing Cloud Next via a Node.js backend using OAuth client credentials and Connect API form-handler endpoints.
+
 ### How to Debug Salesforce Automation Event-Triggered Flows
 - URL: https://modrzejewski.it/blog/the-missing-link-how-to-debug-salesforce-automation-event-triggered-flows
 - Category: Architecture

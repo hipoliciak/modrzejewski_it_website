@@ -20,6 +20,7 @@
 - Data platform activation and governance
 
 ## Recent Blog Posts
+- [Server-Side Processing of Form Handlers in Marketing Cloud Next](https://modrzejewski.it/blog/server-side-processing-of-form-handlers-in-marketing-cloud-next)
 - [How to Debug Salesforce Automation Event-Triggered Flows](https://modrzejewski.it/blog/the-missing-link-how-to-debug-salesforce-automation-event-triggered-flows)
 - [A Pivotal Shift in Salesforce Data 360 Pricing](https://modrzejewski.it/blog/unlocking-the-enterprise-data-360-a-pivotal-shift-in-salesforce-data-cloud-pricing)
 
