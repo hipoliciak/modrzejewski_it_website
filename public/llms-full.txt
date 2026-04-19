@@ -23,6 +23,14 @@ Primary topic: Salesforce solution architecture, integration, and enterprise dat
 	- https://modrzejewski.it/tags/marketing-cloud
 
 ## Blog Entries
+### Data 360 and Informatica MDM as the Foundation of Data Architecture
+- URL: https://modrzejewski.it/blog/data-360-and-informatica-mdm-as-the-foundation-of-data-architecture
+- Category: Architecture
+- Published: 2026-04-19
+- Author: Dominik Modrzejewski
+- Tags: Data 360, Informatica, MDM, Architecture, Data Strategy
+- Summary: An architectural blueprint showing how Informatica MDM and Salesforce Data 360 work together to transform mastered customer identity into real-time activation through governed ingestion, match-and-merge, and downstream AI-ready workflows.
+
 ### Server-Side Processing of Form Handlers in Marketing Cloud Next
 - URL: https://modrzejewski.it/blog/server-side-processing-of-form-handlers-in-marketing-cloud-next
 - Category: Guides
