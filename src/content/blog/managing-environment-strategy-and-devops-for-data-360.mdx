@@ -65,12 +65,12 @@ The relevant API operations expose that lifecycle directly:
 - `GET /ssot/data-kits`
 - `POST /ssot/data-kits`
 - `GET /ssot/data-kits/available-components`
-- `PATCH /ssot/data-kits/{dataKitDevName}`
-- `POST /ssot/data-kits/{dataKitDevName}`
-- `GET /ssot/data-kits/{dataKitDevName}/manifest`
-- `POST /ssot/data-kits/{dataKitName}/undeploy`
-- `GET /ssot/data-kits/{dataKitName}/components/{componentName}/dependencies`
-- `GET /ssot/data-kits/{dataKitName}/components/{componentName}/deployment-status`
+-- `PATCH /ssot/data-kits/&#123;dataKitDevName&#125;`
+-- `POST /ssot/data-kits/&#123;dataKitDevName&#125;`
+-- `GET /ssot/data-kits/&#123;dataKitDevName&#125;/manifest`
+-- `POST /ssot/data-kits/&#123;dataKitName&#125;/undeploy`
+-- `GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/dependencies`
+-- `GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/deployment-status`
 
 ## 4. Manual Release Flow
 
@@ -78,12 +78,12 @@ For teams that are still operating with some human approval and UI-driven promot
 
 ```mermaid
 flowchart LR
-    A[Create Data Kit<br/>POST /ssot/data-kits] --> B[Add Components to Data Kit<br/>PATCH /ssot/data-kits/{dataKitDevName}]
-    B --> C[Get Manifest<br/>GET /ssot/data-kits/{dataKitDevName}/manifest]
-    C --> D[Review Dependencies<br/>GET /ssot/data-kits/{dataKitName}/components/{componentName}/dependencies]
-    D --> E[Deploy from UI<br/>POST /ssot/data-kits/{dataKitDevName}]
-    E --> F[Track Deployment Status<br/>GET /ssot/data-kits/{dataKitName}/components/{componentName}/deployment-status]
-    F --> G[Undeploy if Needed<br/>POST /ssot/data-kits/{dataKitName}/undeploy]
+    A[Create Data Kit<br/>POST /ssot/data-kits] --> B[Add Components to Data Kit<br/>PATCH /ssot/data-kits/&#123;dataKitDevName&#125;]
+    B --> C[Get Manifest<br/>GET /ssot/data-kits/&#123;dataKitDevName&#125;/manifest]
+    C --> D[Review Dependencies<br/>GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/dependencies]
+    D --> E[Deploy from UI<br/>POST /ssot/data-kits/&#123;dataKitDevName&#125;]
+    E --> F[Track Deployment Status<br/>GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/deployment-status]
+    F --> G[Undeploy if Needed<br/>POST /ssot/data-kits/&#123;dataKitName&#125;/undeploy]
 ```
 
 This is the right flow when a release manager or architect needs a final human checkpoint before production.
@@ -103,8 +103,8 @@ flowchart TB
     subgraph Build[1. Assemble Release]
         A[Create Data Kit<br/>POST /ssot/data-kits]
         B[Get Available Components<br/>GET /ssot/data-kits/available-components]
-        C[Add or Update Components<br/>PATCH /ssot/data-kits/{dataKitDevName}]
-        D[Get Manifest<br/>GET /ssot/data-kits/{dataKitDevName}/manifest]
+        C[Add or Update Components<br/>PATCH /ssot/data-kits/&#123;dataKitDevName&#125;]
+        D[Get Manifest<br/>GET /ssot/data-kits/&#123;dataKitDevName&#125;/manifest]
         A --> B --> C --> D
     end
 
@@ -116,9 +116,9 @@ flowchart TB
     end
 
     subgraph Deploy[3. Promote and Monitor]
-        H[Deploy Data Kit<br/>POST /ssot/data-kits/{dataKitDevName}]
-        I[Check Component Status<br/>GET /ssot/data-kits/{dataKitName}/components/{componentName}/deployment-status]
-        J[Rollback or Undeploy<br/>POST /ssot/data-kits/{dataKitName}/undeploy]
+        H[Deploy Data Kit<br/>POST /ssot/data-kits/&#123;dataKitDevName&#125;]
+        I[Check Component Status<br/>GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/deployment-status]
+        J[Rollback or Undeploy<br/>POST /ssot/data-kits/&#123;dataKitName&#125;/undeploy]
         H --> I --> J
     end
 
