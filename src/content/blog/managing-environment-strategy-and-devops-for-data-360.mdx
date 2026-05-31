@@ -65,25 +65,42 @@ The relevant API operations expose that lifecycle directly:
 - `GET /ssot/data-kits`
 - `POST /ssot/data-kits`
 - `GET /ssot/data-kits/available-components`
--- `PATCH /ssot/data-kits/&#123;dataKitDevName&#125;`
--- `POST /ssot/data-kits/&#123;dataKitDevName&#125;`
--- `GET /ssot/data-kits/&#123;dataKitDevName&#125;/manifest`
--- `POST /ssot/data-kits/&#123;dataKitName&#125;/undeploy`
--- `GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/dependencies`
--- `GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/deployment-status`
+- `PATCH /ssot/data-kits/{dataKitDevName}`
+- `POST /ssot/data-kits/{dataKitDevName}`
+- `GET /ssot/data-kits/{dataKitDevName}/manifest`
+- `POST /ssot/data-kits/{dataKitName}/undeploy`
+- `GET /ssot/data-kits/{dataKitName}/components/{componentName}/dependencies`
+- `GET /ssot/data-kits/{dataKitName}/components/{componentName}/deployment-status`
 
 ## 4. Manual Release Flow
 
 For teams that are still operating with some human approval and UI-driven promotion, the manual deployment pattern is straightforward.
 
 ```mermaid
-flowchart LR
-    A[Create Data Kit<br/>POST /ssot/data-kits] --> B[Add Components to Data Kit<br/>PATCH /ssot/data-kits/&#123;dataKitDevName&#125;]
-    B --> C[Get Manifest<br/>GET /ssot/data-kits/&#123;dataKitDevName&#125;/manifest]
-    C --> D[Review Dependencies<br/>GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/dependencies]
-    D --> E[Deploy from UI<br/>POST /ssot/data-kits/&#123;dataKitDevName&#125;]
-    E --> F[Track Deployment Status<br/>GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/deployment-status]
-    F --> G[Undeploy if Needed<br/>POST /ssot/data-kits/&#123;dataKitName&#125;/undeploy]
+flowchart TB
+    subgraph SandboxOrg [1. Configure in Sandbox]
+        A["Configure Components<br/>Datastreams, CIs, Segments"]
+        B["Create DevOps Data Kit"]
+        C["Add Components to Data Kit"]
+        A --> B --> C
+    end
+
+    subgraph SourceControl [2. Version in Git]
+        D["Retrieve Metadata<br/>via API / SFDX CLI"]
+        E["Store and Version<br/>in Git"]
+        F["Deploy to Target Org<br/>via Metadata API"]
+        D --> E --> F
+    end
+
+    subgraph TargetOrg [3. Deploy to Target Org]
+        G["DevOps Data Kit<br/>Lands in Target Org"]
+        H["User Deploys Data Kit<br/>via UI Click"]
+        I["Components Deployed in Sequence"]
+        G --> H --> I
+    end
+
+    C --> D
+    F --> G
 ```
 
 This is the right flow when a release manager or architect needs a final human checkpoint before production.
@@ -101,35 +118,35 @@ Once the process is stable, the release path should move into source control and
 ```mermaid
 flowchart TB
     subgraph Build[1. Assemble Release]
-        A[Create Data Kit<br/>POST /ssot/data-kits]
-        B[Get Available Components<br/>GET /ssot/data-kits/available-components]
-        C[Add or Update Components<br/>PATCH /ssot/data-kits/&#123;dataKitDevName&#125;]
-        D[Get Manifest<br/>GET /ssot/data-kits/&#123;dataKitDevName&#125;/manifest]
-        A --> B --> C --> D
+        A[Configure Components<br/>Datastreams, CIs, Segments]
+        B["Create Data Kit<br/>POST /ssot/data-kits"]
+        C["Get Available Components<br/>GET /ssot/data-kits/available-components"]
+        D["Add or Update Components<br/>PATCH /ssot/data-kits/{dataKitDevName}"]
+        E["Get Manifest<br/>GET /ssot/data-kits/{dataKitDevName}/manifest"]
+        A --> B --> C --> D --> E
     end
 
-    subgraph SourceControl[2. Version and Validate]
-        E[Store Manifest and Metadata in Git]
-        F[Run Automated Checks]
-        G[Approval Gate]
-        E --> F --> G
+    subgraph SourceControl[2. Control Version]
+        F["Retrieve Metadata<br/>via API / SFDX CLI"]
+        G["Source Control<br/>Git"]
+        H["5. Deploy to Target Org<br/>via Metadata API"]
+        F --> G --> H
     end
 
     subgraph Deploy[3. Promote and Monitor]
-        H[Deploy Data Kit<br/>POST /ssot/data-kits/&#123;dataKitDevName&#125;]
-        I[Check Component Status<br/>GET /ssot/data-kits/&#123;dataKitName&#125;/components/&#123;componentName&#125;/deployment-status]
-        J[Rollback or Undeploy<br/>POST /ssot/data-kits/&#123;dataKitName&#125;/undeploy]
-        H --> I --> J
+        I["Deploy Data Kit<br/>POST /ssot/data-kits/{dataKitDevName}"]
+        J["Check Deployment Status<br/>GET /ssot/data-kits/{dataKitDevName}/components/{componentName}/deployment-status"]
+        K["Rollback or Undeploy<br/>POST /ssot/data-kits/{dataKitDevName}/undeploy"]
+        I --> J --> K
     end
 
-    D --> E
-    G --> H
+    E --> F
+    H --> I
 ```
 
 This pattern is better for teams that want reproducibility, auditability, and faster release cadence.
 
 The key advantages are:
-
 - repeatable packaging,
 - traceable change history,
 - lower manual error rate,
