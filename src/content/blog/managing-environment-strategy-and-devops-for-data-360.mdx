@@ -79,24 +79,25 @@ For teams that are still operating with some human approval and UI-driven promot
 ```mermaid
 flowchart TB
     subgraph SandboxOrg [1. Configure in Sandbox]
-        A["Configure Components<br/>Datastreams, CIs, Segments"]
-        B["Create DevOps Data Kit"]
+        A["Configure Components in Data 360<br/>(DataStreams, CIs, Segments, etc.)"]
+        B["Create a DevOps Data Kit in the UI"]
         C["Add Components to Data Kit"]
         A --> B --> C
     end
 
     subgraph SourceControl [2. Version in Git]
-        D["Retrieve Metadata<br/>via API / SFDX CLI"]
-        E["Store and Version<br/>in Git"]
-        F["Deploy to Target Org<br/>via Metadata API"]
+        D["Download Manifest via UI"]
+        E["Retrieve Metadata<br/>via API / SFDX CLI"]
+        F["Add to Version Control System<br/>(e.g.) Git"]
         D --> E --> F
     end
 
     subgraph TargetOrg [3. Deploy to Target Org]
-        G["DevOps Data Kit<br/>Lands in Target Org"]
-        H["User Deploys Data Kit<br/>via UI Click"]
-        I["Components Deployed in Sequence"]
-        G --> H --> I
+        G["Deploy to Target Org<br/>via Metadata API"]
+        H["DevOps Data Kit<br/>Lands in Target Org"]
+        I["User Deploys Data Kit<br/>via UI Click"]
+        J["Components Deployed in Sequence"]
+        G --> H --> I --> J
     end
 
     C --> D
@@ -118,8 +119,8 @@ Once the process is stable, the release path should move into source control and
 ```mermaid
 flowchart TB
     subgraph Build[1. Assemble Release]
-        A[Configure Components<br/>Datastreams, CIs, Segments]
-        B["Create Data Kit<br/>POST /ssot/data-kits"]
+        A["Configure Components in Data 360<br/>(DataStreams, CIs, Segments, etc.)"]
+        B["Create a DevOps Data Kit<br/>POST /ssot/data-kits"]
         C["Get Available Components<br/>GET /ssot/data-kits/available-components"]
         D["Add or Update Components<br/>PATCH /ssot/data-kits/{dataKitDevName}"]
         E["Get Manifest<br/>GET /ssot/data-kits/{dataKitDevName}/manifest"]
@@ -128,20 +129,19 @@ flowchart TB
 
     subgraph SourceControl[2. Control Version]
         F["Retrieve Metadata<br/>via API / SFDX CLI"]
-        G["Source Control<br/>Git"]
-        H["5. Deploy to Target Org<br/>via Metadata API"]
-        F --> G --> H
+        G["Add to Version Control System<br/>(e.g.) Git"]
+        F --> G
     end
 
     subgraph Deploy[3. Promote and Monitor]
-        I["Deploy Data Kit<br/>POST /ssot/data-kits/{dataKitDevName}"]
-        J["Check Deployment Status<br/>GET /ssot/data-kits/{dataKitDevName}/components/{componentName}/deployment-status"]
-        K["Rollback or Undeploy<br/>POST /ssot/data-kits/{dataKitDevName}/undeploy"]
-        I --> J --> K
+        H["Deploy Data Kit to Target Org<br/>POST /ssot/data-kits/{dataKitDevName}"]
+        I["Check Deployment Status<br/>GET /ssot/data-kits/{dataKitDevName}/components/{componentName}/deployment-status"]
+        J["Rollback or Undeploy<br/>POST /ssot/data-kits/{dataKitDevName}/undeploy"]
+        H --> I --> J
     end
 
     E --> F
-    H --> I
+    G --> H
 ```
 
 This pattern is better for teams that want reproducibility, auditability, and faster release cadence.
