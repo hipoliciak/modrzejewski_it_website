@@ -1,9 +1,11 @@
 ---
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import { getCollection } from 'astro:content';
 import Layout from './Layout.astro';
 import { tagToSlug } from '../utils/tags';
 import GiscusComments from '../components/GiscusComments.astro';
+import RelatedPosts from '../components/RelatedPosts.astro';
 
 interface Props {
   title: string;
@@ -13,11 +15,26 @@ interface Props {
   author: string;
   category: string;
   tags: string[];
+  currentSlug: string;
   image?: ImageMetadata;
   imageAlt?: string;
 }
 
-const { title, description, pubDate, updatedDate, author, category, tags, image, imageAlt } = Astro.props;
+const { title, description, pubDate, updatedDate, author, category, tags, currentSlug, image, imageAlt } = Astro.props;
+
+const relatedPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .filter((post) => post.id.replace(/\.(md|mdx)$/, '') !== currentSlug)
+  .map((post) => {
+    const sharedTags = post.data.tags.filter((tag) => tags.includes(tag)).length;
+    const sameCategory = post.data.category === category ? 1 : 0;
+    const score = sharedTags * 2 + sameCategory * 3;
+
+    return { post, score };
+  })
+  .filter(({ score }) => score > 0)
+  .sort((left, right) => right.score - left.score || right.post.data.pubDate.getTime() - left.post.data.pubDate.getTime())
+  .slice(0, 2)
+  .map(({ post }) => post);
 
 const formattedPubDate = pubDate.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -124,6 +141,8 @@ const articleSchema = {
         <a href="/contact" class="font-semibold text-brand-navy dark:text-blue-400 hover:underline"> contact form</a>.
       </p>
     </aside>
+
+    {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
 
     <GiscusComments term={title} />
   </article>

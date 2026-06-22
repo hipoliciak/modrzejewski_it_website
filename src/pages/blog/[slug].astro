@@ -22,6 +22,7 @@ const { Content } = await render(post);
   author={post.data.author}
   category={post.data.category}
   tags={post.data.tags}
+  currentSlug={post.id.replace(/\.(md|mdx)$/, '')}
   image={post.data.image}
   imageAlt={post.data.imageAlt}
 >
