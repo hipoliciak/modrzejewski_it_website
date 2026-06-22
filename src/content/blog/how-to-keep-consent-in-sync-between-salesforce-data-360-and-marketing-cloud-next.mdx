@@ -1,0 +1,167 @@
+---
+title: "How to Keep Consent in Sync between Salesforce, Data 360 and Marketing Cloud Next"
+description: "Blueprint for a validated, 3-flow system to achieve customer consent synchronization across Marketing Cloud Next, Data 360, and Salesforce CRM"
+pubDate: 2026-06-23
+updatedDate: 2026-06-23
+author: "Dominik Modrzejewski"
+category: "Guides"
+featured: true
+featuredOrder: 1
+tags: ["Data 360", "Consent Management", "Marketing Cloud", "Flow", "Automation"]
+image: ../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/cover-consent-sync-data-360-marketing-cloud-next.png
+imageAlt: "Cover for How to Keep Consent in Sync between Salesforce, Data 360 and Marketing Cloud Next"
+---
+
+With the rollout of Marketing Cloud Next, Salesforce has fundamentally reimagined consent management. Consent is no longer an arbitrary text field or a checkbox on a Lead or Contact record. Instead, it is highly structured, multi-channel, and tightly bound to specific **Contact Points** (such as a unique email address or phone number) rather than the individual record itself.
+
+Excellent conceptual overviews of this paradigm shift have already been highlighted by industry peers, notably François Perret in his [Consent Management Deep Dive](https://the-agentic-marketer.com/marketing-cloud-next-deep-dives/consent-management/) and Nobuyuki Watanabe in his [Guide to Consent Management](https://medium.com/@marketingcloudtips/marketing-cloud-on-core-a-guide-to-consent-management-5ca95a1602a0).
+
+For e-commerce architectures where Salesforce CRM acts as the core transactional repository using the standard **Communication Subscription Consent (`CommSubscriptionConsent`)** object, maintaining a real-time, bi-directional sync with Data 360 and Marketing Cloud Next is critical.
+
+Crucially, **traditional data integration methods will break your compliance**. This post details the strict rules of MC Next consent mechanics and outlines the 3-flow architecture required to keep your systems flawlessly in sync.
+
+## The Golden Rule of MC Next Consent: Watch out for Unsupported Methods
+
+Before configuring any synchronization, enterprise architects must understand a major architectural guardrail: **You cannot map external consent data directly into the Communication Subscription Consent DMO via data streams or batch data transforms.**
+
+While the data may appear to save successfully in the DMO, MC Next will ignore it during message sends. This leads to critical compliance failures:
+
+* **Silent Dropouts:** Emails may fail to send to fully opted-in addresses.
+* **Compliance Violations:** Emails may be inadvertently sent to opted-out individuals because the transactional consent service did not register the change.
+* **UI Misalignment:** The DMO data will mismatch the *Consent Status* component on individual records.
+
+For the strict engineering definitions governing these behaviors, consult the official Salesforce documentation on [Understanding Consent Concepts in Marketing Cloud Next](https://help.salesforce.com/s/articleView?id=mktg.mktg_consent_tools_ref.htm&type=5) alongside the master checklist of [Marketing Cloud Next Supported Consent Actions](https://help.salesforce.com/s/articleView?id=005316463&type=1).
+
+**The Solution:** Consent updates within MC Next must be executed *exclusively* via native **Create Consent Flow Actions** inside either **Data Cloud-Triggered Flows** or **Automation Event-Triggered Flows**.
+
+## The 3-Flow Architecture for E-Commerce Consent Sync
+
+To bridge Salesforce CRM, Data 360, and Marketing Cloud Next without breaking transactional logic, we deploy three specific flows.
+
+### Flow 1: New Registration Automation (Data Cloud-Triggered)
+
+**Trigger Scenario:** A customer record is processed in Data Cloud. We need to evaluate their incoming preference and establish the baseline consent state for their target contact point email.
+
+```mermaid
+graph TD
+    A[Trigger: Individual Created] --> B[Get Related
+    Contact Point Email]
+    B --> C{Decision: Check
+    Consent Status}
+    C -- Opt In --> D["Create Consent Action
+    Status: Opt In"]
+    C -- Opt Out --> E["Create Consent Action
+    Status: Opt Out"]
+    D --> F[MC Next Consent Updated]
+    E --> F
+```
+
+* **Flow Type:** Data Cloud-Triggered Flow
+* **Trigger Object:** Individual (`ssot_Individual__dlm`)
+* **Trigger Condition:** A record is created or updated
+* **Logic Steps:**
+1. **Get Records (`Get Related Contact Point Email`):** Query `ssot_ContactPointEmail__dlm` where `Party` equals the triggering `Individual Id`.
+2. **Decision (`Check Consent Status`):** Evaluate the incoming registration payload data to determine the user's intent.
+* *Branch A (Opt In):* Triggering data indicates active subscription acceptance.
+* *Branch B (Opt Out):* Triggering data indicates explicit non-consent or omission.
+3. **Action Branches:**
+* *Path A (Opt In):* Execute the **Create Consent** action. Set *Consent Status* to `Opt In`, *Channel* to `Email`, and map the *Contact Point* dynamically from the retrieved email address record.
+* *Path B (Opt Out):* Execute the **Create Consent** action. Set *Consent Status* to `Opt Out`, *Channel* to `Email`, and map the *Contact Point* dynamically.
+
+![Data Cloud-triggered flow start for a new individual registration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-start-data-cloud-triggered-individual.png)
+
+![Get related contact point email configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-get-related-contact-point-email.png)
+
+![Create consent action for the contact point email](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-create-consent-for-contact-point-email.png)
+
+### Flow 2: Reflect MC Next Preferences in CRM (Data Cloud-Triggered)
+
+**Trigger Scenario:** A subscriber updates their preferences via an MC Next default preference page or clicks an unsubscribe URL in an email marketing campaign. This alters the consent state within MC Next, and we must push this downstream to the CRM.
+
+```mermaid
+graph TD
+    A[Trigger: Communication
+    Subscription
+    Consent Updated] --> B[Get CommSubConsent
+    from CRM]
+    B --> C{Decision: Check
+    Consent Status}
+    C -- True --> D["Update CRM Field
+    PrivacyConsentStatus
+    to Opt In"]
+    C -- False --> E["Update CRM Field
+    PrivacyConsentStatus
+    to Opt Out"]
+    D --> F[CRM Consent Synced
+    with MC Next]
+    E --> F
+```
+
+* **Flow Type:** Data Cloud-Triggered Flow
+* **Trigger Object:** Communication Subscription Consent (`ssot_CommunicationSubscriptionConsent__dlm`)
+* **Trigger Condition:** A record is updated
+* **Logic Steps:**
+1. **Get Records (`Get CommsSubConsent from CRM`):** Query the core Salesforce CRM `Communication Subscription Consent` object. Filter where the core `Consent Giver ID` matches the triggering `ssot_CommunicationSubscriptionConsent__dlm > Party` ID. Select and store the `Id` and `PrivacyConsentStatus` fields.
+2. **Decision (`Check Consent Status`):** Evaluate if the triggering Data Cloud `Consent Status` is equal to `True`.
+3. **Update Records Branches:**
+* *If True (Consent Given):* Update the retrieved CRM record's `Privacy Consent Status` to `Opt In`.
+* *If False (Consent Revoked):* Update the retrieved CRM record's `Privacy Consent Status` to `Opt Out`.
+
+![Data Cloud-triggered flow start for the communication subscription consent update](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-start-data-cloud-triggered-communication-subscription-consent.png)
+
+![Get CommsSubConsent from CRM configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-get-commsubconsent-from-crm.png)
+
+![Decision configuration for consent status synchronization](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-check-consent-status.png)
+
+![Update CommSubConsent status in CRM to Opt In](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-update-commsubconsent-status-in-crm-opt-in.png)
+
+### Flow 3: Reflect CRM Updates in MC Next (Automation Event-Triggered)
+
+**Trigger Scenario:** A customer service agent or an external API modifies a core CRM `CommSubscriptionConsent` record. This back-office shift must be forced upstream into the MC Next transactional framework.
+
+```mermaid
+graph TD
+    A[Trigger: CommSubConsent
+    Created/Updated] --> B[Get Contact
+    for CommSubConsent]
+    B --> C{Decision: Check
+    Consent Status}
+    C -- Opt In --> D["Create Consent Action
+    Status: Opt In"]
+    C -- Opt Out --> E["Create Consent Action
+    Status: Opt Out"]
+    D --> F[MC Next Consent Updated]
+    E --> F
+```
+
+* **Flow Type:** Automation Event-Triggered Flow (*Prospect, Lead, Contact or Related Record Change*)
+* **Trigger Object:** Communication Subscription Consent (`CommSubscriptionConsent`)
+* **Trigger Condition:** A record is created or updated. Object anchor set to `Consent Giver ID (Contact)`.
+* **Logic Steps:**
+1. **Get Records (`Get Contact for CommsSubConsent`):** Query the CRM `Contact` record where `Contact ID` matches the triggering record's `Consent Giver ID`.
+2. **Decision (`Check Consent Status`):** Evaluate the value of the triggering CRM record’s `Privacy Consent Status` field.
+* *Branch A (Consent Given):* Value equals `Opt In`.
+* *Branch B (Consent Revoked):* Value equals `Opt Out`.
+3. **Action Branches:**
+* *Path A (Consent Given):* Execute the **Create Consent** action. Set *Consent Status* parameter to `Opt In`, map the target communication channel, and supply the designated email contact point value.
+* *Path B (Consent Revoked):* Execute the **Create Consent** action. Set the *Consent Status* parameter to `Opt Out`. This tells the underlying transactional engine to treat the contact point as suppressed, immediately preventing future campaign deployment.
+
+![Automation event-triggered flow start for CommSubscriptionConsent changes](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-start-automation-event-triggered-commsubconsent.png)
+
+![Get Contact for CommSubConsent configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-get-contact-for-commsubconsent.png)
+
+![Decision configuration for CRM consent status evaluation](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-check-consent-status.png)
+
+![Create consent in MC Next configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-create-consent-in-mc-next.png)
+
+## Technical Summary Matrix
+
+| Flow Purpose | Flow Type | Starting Trigger Object | Core Action Element |
+| --- | --- | --- | --- |
+| **1. Net New Opt-In** | Data Cloud-Triggered | `ssot_Individual__dlm` (Created) | Native `Create Consent` (Action) |
+| **2. MC Next --> CRM** | Data Cloud-Triggered | `ssot_CommunicationSubscriptionConsent__dlm` (Updated) | Standard `Update Records` (CRM Core) |
+| **3. CRM --> MC Next** | Automation Event-Triggered | `CommSubscriptionConsent` (Created/Updated) | Native `Create Consent` (Action) |
+
+## Architect's Takeaway
+
+When implementing Marketing Cloud Next alongside Data 360, treat consent data with the same strict governance as platform event streams. Do not rely on loose field mapping across data streams. By enforcing this 3-flow structural design pattern, you guarantee that your e-commerce platform remains completely aligned with global privacy frameworks (GDPR/CCPA), ensuring no message is lost—and more importantly, no opt-out is ignored.
