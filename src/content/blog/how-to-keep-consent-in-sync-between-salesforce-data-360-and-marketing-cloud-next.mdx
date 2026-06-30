@@ -40,37 +40,44 @@ To bridge Salesforce CRM, Data 360, and Marketing Cloud Next without breaking tr
 
 ### Flow 1: New Registration Automation (Data Cloud-Triggered)
 
-**Trigger Scenario:** A customer record is processed in Data Cloud. We need to evaluate their incoming preference and establish the baseline consent state for their target contact point email.
+**Trigger Scenario:** A customer record is processed in Data Cloud. We need to evaluate their incoming preference, look up the related CRM consent state, and establish the baseline consent state for their target contact point email.
 
 ```mermaid
 graph TD
     A[Trigger: Individual Created] --> B[Get Related
     Contact Point Email]
-    B --> C{Decision: Check
-    Consent Status}
-    C -- Opt In --> D["Create Consent Action
+    B --> C[Get Related
+    CommSubConsent from CRM]
+    C --> D{Decision: Check
+    CRM Consent Status}
+    D -- Opt In --> E["Create Consent Action
     Status: Opt In"]
-    C -- Opt Out --> E["Create Consent Action
+    D -- Opt Out --> F["Create Consent Action
     Status: Opt Out"]
-    D --> F[MC Next Consent Updated]
-    E --> F
+    E --> G[MC Next Consent Updated]
+    F --> G
 ```
 
 * **Flow Type:** Data Cloud-Triggered Flow
 * **Trigger Object:** Individual (`ssot_Individual__dlm`)
-* **Trigger Condition:** A record is created or updated
+* **Trigger Condition:** A record is created
 * **Logic Steps:**
 1. **Get Records (`Get Related Contact Point Email`):** Query `ssot_ContactPointEmail__dlm` where `Party` equals the triggering `Individual Id`.
-2. **Decision (`Check Consent Status`):** Evaluate the incoming registration payload data to determine the user's intent.
-* *Branch A (Opt In):* Triggering data indicates active subscription acceptance.
-* *Branch B (Opt Out):* Triggering data indicates explicit non-consent or omission.
-3. **Action Branches:**
+2. **Get Records (`Get Related CommSubConsent from CRM`):** Query the core Salesforce CRM `Communication Subscription Consent` object. Filter where `Consent Giver ID` matches the triggering `Individual Id`.
+3. **Decision (`Check CRM Consent Status`):** Evaluate the CRM `Privacy Consent Status` value to determine the user's intent.
+* *Branch A (Opt In):* CRM consent status indicates active subscription acceptance.
+* *Branch B (Opt Out):* CRM consent status indicates explicit non-consent or omission.
+4. **Action Branches:**
 * *Path A (Opt In):* Execute the **Create Consent** action. Set *Consent Status* to `Opt In`, *Channel* to `Email`, and map the *Contact Point* dynamically from the retrieved email address record.
 * *Path B (Opt Out):* Execute the **Create Consent** action. Set *Consent Status* to `Opt Out`, *Channel* to `Email`, and map the *Contact Point* dynamically.
 
 ![Data Cloud-triggered flow start for a new individual registration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-start-data-cloud-triggered-individual.png)
 
 ![Get related contact point email configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-get-related-contact-point-email.png)
+
+![Get related CommSubConsent from CRM configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-get-related-commsubconsent-from-crm.png)
+
+![Decision configuration for CRM consent status evaluation](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-check-crm-consent-status.png)
 
 ![Create consent action for the contact point email](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-create-consent-for-contact-point-email.png)
 
@@ -122,7 +129,7 @@ graph TD
 ```mermaid
 graph TD
     A[Trigger: CommSubConsent
-    Created/Updated] --> B[Get Contact
+    Updated] --> B[Get Contact
     for CommSubConsent]
     B --> C{Decision: Check
     Consent Status}
@@ -136,7 +143,7 @@ graph TD
 
 * **Flow Type:** Automation Event-Triggered Flow (*Prospect, Lead, Contact or Related Record Change*)
 * **Trigger Object:** Communication Subscription Consent (`CommSubscriptionConsent`)
-* **Trigger Condition:** A record is created or updated. Object anchor set to `Consent Giver ID (Contact)`.
+* **Trigger Condition:** A record is updated. Object anchor set to `Consent Giver ID (Contact)`.
 * **Logic Steps:**
 1. **Get Records (`Get Contact for CommsSubConsent`):** Query the CRM `Contact` record where `Contact ID` matches the triggering record's `Consent Giver ID`.
 2. **Decision (`Check Consent Status`):** Evaluate the value of the triggering CRM record’s `Privacy Consent Status` field.
@@ -160,7 +167,7 @@ graph TD
 | --- | --- | --- | --- |
 | **1. Net New Opt-In** | Data Cloud-Triggered | `ssot_Individual__dlm` (Created) | Native `Create Consent` (Action) |
 | **2. MC Next --> CRM** | Data Cloud-Triggered | `ssot_CommunicationSubscriptionConsent__dlm` (Updated) | Standard `Update Records` (CRM Core) |
-| **3. CRM --> MC Next** | Automation Event-Triggered | `CommSubscriptionConsent` (Created/Updated) | Native `Create Consent` (Action) |
+| **3. CRM --> MC Next** | Automation Event-Triggered | `CommSubscriptionConsent` (Updated) | Native `Create Consent` (Action) |
 
 ## Architect's Takeaway
 
