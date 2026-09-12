@@ -2,7 +2,7 @@
 title: "How to Keep Consent in Sync between Salesforce, Data 360 and Marketing Cloud Next"
 description: "Blueprint for a validated, 3-flow system to achieve customer consent synchronization across Marketing Cloud Next, Data 360, and Salesforce CRM"
 pubDate: 2026-06-23
-updatedDate: 2026-06-23
+updatedDate: 2026-09-12
 author: "Dominik Modrzejewski"
 category: "Guides"
 featured: true
@@ -32,54 +32,61 @@ While the data may appear to save successfully in the DMO, MC Next will ignore i
 
 For the strict engineering definitions governing these behaviors, consult the official Salesforce documentation on [Understanding Consent Concepts in Marketing Cloud Next](https://help.salesforce.com/s/articleView?id=mktg.mktg_consent_tools_ref.htm&type=5) alongside the master checklist of [Marketing Cloud Next Supported Consent Actions](https://help.salesforce.com/s/articleView?id=005316463&type=1).
 
-**The Solution:** Consent updates within MC Next must be executed *exclusively* via native **Create Consent Flow Actions** inside either **Data Cloud-Triggered Flows** or **Automation Event-Triggered Flows**.
+**The Solution:** Consent updates within MC Next must be executed via the native **Create Consent** flow action so that the transactional consent service registers the change. In the current release, Salesforce also supports this action in record-triggered flows, allowing changes to CRM records to update MC Next consent directly. See [Update Consent Data with the Create Consent Flow Action](https://help.salesforce.com/s/articleView?id=release-notes.rn_mktg_consent_flow_action.htm&release=264&type=5) for the release details.
 
 ## The 3-Flow Architecture for E-Commerce Consent Sync
 
 To bridge Salesforce CRM, Data 360, and Marketing Cloud Next without breaking transactional logic, we deploy three specific flows.
 
-### Flow 1: New Registration Automation (Data Cloud-Triggered)
+### Flow 1: New Registration Automation (Record-Triggered)
 
-**Trigger Scenario:** A customer record is processed in Data Cloud. We need to evaluate their incoming preference, look up the related CRM consent state, and establish the baseline consent state for their target contact point email.
+**Trigger Scenario:** A new Person Account is created in Salesforce CRM. After the transaction commits, we need to inspect its channel-specific CRM consent records and establish the baseline MC Next consent state for its email and mobile contact points.
 
 ```mermaid
 graph TD
-    A[Trigger: Individual Created] --> B[Get Related
-    Contact Point Email]
-    B --> C[Get Related
-    CommSubConsent from CRM]
-    C --> D{Decision: Check
-    CRM Consent Status}
-    D -- Opt In --> E["Create Consent Action
+    A[Trigger: Person Account
+    Created] --> B[Async After Commit]
+    B --> C[Get CRM Communication
+    Subscription Channel Types]
+    C --> D[Loop Through
+    Channel Types]
+    D --> E{Identify Current
+    Channel Type}
+    E -- Email --> F[Get Latest CRM Consent
+    for Account and Channel]
+    E -- Mobile SMS --> G[Get Latest CRM Consent
+    for Account and Channel]
+    F --> H{Check CRM Email
+    Consent Status}
+    H -- Opt In --> I["Create Consent Action
     Status: Opt In"]
-    D -- Opt Out --> F["Create Consent Action
+    H -- Opt Out --> J["Create Consent Action
     Status: Opt Out"]
-    E --> G[MC Next Consent Updated]
-    F --> G
+    G --> K{Check CRM SMS
+    Consent Status}
+    K -- Opt In --> L["Create Consent Action
+    Status: Opt In"]
+    K -- Opt Out --> M["Create Consent Action
+    Status: Opt Out"]
+    I --> D
+    J --> D
+    L --> D
+    M --> D
 ```
 
-* **Flow Type:** Data Cloud-Triggered Flow
-* **Trigger Object:** Individual (`ssot_Individual__dlm`)
-* **Trigger Condition:** A record is created
+* **Flow Type:** Record-Triggered Flow with an asynchronous path
+* **Trigger Object:** Account (`Account`)
+* **Trigger Condition:** A record is created and `IsPersonAccount` equals `True`
 * **Logic Steps:**
-1. **Get Records (`Get Related Contact Point Email`):** Query `ssot_ContactPointEmail__dlm` where `Party` equals the triggering `Individual Id`.
-2. **Get Records (`Get Related CommSubConsent from CRM`):** Query the core Salesforce CRM `Communication Subscription Consent` object. Filter where `Consent Giver ID` matches the triggering `Individual Id`.
-3. **Decision (`Check CRM Consent Status`):** Evaluate the CRM `Privacy Consent Status` value to determine the user's intent.
+1. **Get Records (`Get CRM Communication Subscription Channel Types`):** Query all core CRM `CommSubscriptionChannelType` records after the Account transaction commits.
+2. **Loop and Decision (`Identify the Current Channel Type`):** Iterate through the channel types and route records named `Email` or `Mobile SMS` to their channel-specific path.
+3. **Get Records (`Get CRM Consent State`):** Query the latest core CRM `CommSubscriptionConsent` where `Consent Giver ID` equals the new Person Account ID and `Communication Subscription Channel Type ID` equals the current channel type.
+4. **Decision (`Check CRM Consent State`):** Evaluate the retrieved `Privacy Consent Status` value.
 * *Branch A (Opt In):* CRM consent status indicates active subscription acceptance.
-* *Branch B (Opt Out):* CRM consent status indicates explicit non-consent or omission.
-4. **Action Branches:**
-* *Path A (Opt In):* Execute the **Create Consent** action. Set *Consent Status* to `Opt In`, *Channel* to `Email`, and map the *Contact Point* dynamically from the retrieved email address record.
-* *Path B (Opt Out):* Execute the **Create Consent** action. Set *Consent Status* to `Opt Out`, *Channel* to `Email`, and map the *Contact Point* dynamically.
-
-![Data Cloud-triggered flow start for a new individual registration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-start-data-cloud-triggered-individual.png)
-
-![Get related contact point email configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-get-related-contact-point-email.png)
-
-![Get related CommSubConsent from CRM configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-get-related-commsubconsent-from-crm.png)
-
-![Decision configuration for CRM consent status evaluation](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-check-crm-consent-status.png)
-
-![Create consent action for the contact point email](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-1-create-consent-for-contact-point-email.png)
+* *Branch B (Opt Out):* CRM consent status indicates explicit non-consent.
+5. **Action Branches:**
+* *Path A (Opt In):* Execute the **Create Consent** action with *Consent Status* set to `OptIn`, the appropriate email or SMS subscription and channel configuration, and the Person Account's corresponding email address or mobile number as the contact point value.
+* *Path B (Opt Out):* Execute the **Create Consent** action with *Consent Status* set to `OptOut` and the same channel-specific contact point and configuration.
 
 ### Flow 2: Reflect MC Next Preferences in CRM (Data Cloud-Triggered)
 
@@ -89,85 +96,98 @@ graph TD
 graph TD
     A[Trigger: Communication
     Subscription
-    Consent Updated] --> B[Get CommSubConsent
-    from CRM]
-    B --> C{Decision: Check
-    Consent Status}
-    C -- True --> D["Update CRM Field
-    PrivacyConsentStatus
-    to Opt In"]
-    C -- False --> E["Update CRM Field
-    PrivacyConsentStatus
-    to Opt Out"]
-    D --> F[CRM Consent Synced
-    with MC Next]
-    E --> F
+    Consent Status Changed] --> B[Get D360 Communication
+    Subscription Channel Types]
+    B --> C[Match Triggering
+    Channel Type]
+    C --> D{Identify Email
+    or SMS}
+    D -- Marketing Email --> E[Get Latest CRM Consent by
+    Email Channel and Contact Point]
+    D -- Marketing SMS --> F[Get Latest CRM Consent by
+    SMS Channel and Contact Point]
+    E --> G{Compare D360 and
+    CRM Consent States}
+    F --> G
+    G -- Different --> H[Update CRM Status,
+    Source and Effective Dates]
+    G -- Same --> I[No Update]
 ```
 
 * **Flow Type:** Data Cloud-Triggered Flow
 * **Trigger Object:** Communication Subscription Consent (`ssot_CommunicationSubscriptionConsent__dlm`)
-* **Trigger Condition:** A record is updated
+* **Trigger Condition:** A record is updated and `ssot__ConsentStatus__c` changes
 * **Logic Steps:**
-1. **Get Records (`Get CommsSubConsent from CRM`):** Query the core Salesforce CRM `Communication Subscription Consent` object. Filter where the core `Consent Giver ID` matches the triggering `ssot_CommunicationSubscriptionConsent__dlm > Party` ID. Select and store the `Id` and `PrivacyConsentStatus` fields.
-2. **Decision (`Check Consent Status`):** Evaluate if the triggering Data Cloud `Consent Status` is equal to `True`.
-3. **Update Records Branches:**
-* *If True (Consent Given):* Update the retrieved CRM record's `Privacy Consent Status` to `Opt In`.
-* *If False (Consent Revoked):* Update the retrieved CRM record's `Privacy Consent Status` to `Opt Out`.
+1. **Get and Filter Channel Types:** Query the Data 360 `ssot__CommunicationSubscriptionChannelType__dlm` records, select the record whose `ssot__Id__c` matches the triggering consent's channel type ID, and inspect its name.
+2. **Decision (`Update CRM Consent for the Correct Channel Type`):** Route names beginning with `Marketing Email` or `Marketing SMS` to the corresponding CRM channel path.
+3. **Get Records (`Get CRM Channel Type`):** Query the core `CommSubscriptionChannelType` named `Email` or `Mobile SMS`.
+4. **Get Records (`Get CRM Consent State`):** Query the latest core `CommSubscriptionConsent` matching both the CRM channel type and the triggering DMO's contact point value.
+5. **Decision (`Update CRM Consent State`):** Compare the Data 360 status values `OPT_IN` and `OPT_OUT` with the CRM values `OptIn` and `OptOut`. Continue only when the two systems disagree.
+6. **Update Records Branches:**
+* *If Data 360 is `OPT_IN`:* Set the matching CRM record's `PrivacyConsentStatus` to `OptIn`.
+* *If Data 360 is `OPT_OUT`:* Set the matching CRM record's `PrivacyConsentStatus` to `OptOut`.
+* *For either update:* Copy the captured timestamp into `ConsentCapturedDateTime` and `EffectiveFromDate`, set `ConsentCapturedSource` to `Marketing Cloud Next`, and set `EffectiveToDate` to 12 months after the captured timestamp.
 
-![Data Cloud-triggered flow start for the communication subscription consent update](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-start-data-cloud-triggered-communication-subscription-consent.png)
-
-![Get CommsSubConsent from CRM configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-get-commsubconsent-from-crm.png)
-
-![Decision configuration for consent status synchronization](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-check-consent-status.png)
-
-![Update CommSubConsent status in CRM to Opt In](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-2-update-commsubconsent-status-in-crm-opt-in.png)
-
-### Flow 3: Reflect CRM Updates in MC Next (Automation Event-Triggered)
+### Flow 3: Reflect CRM Updates in MC Next (Record-Triggered)
 
 **Trigger Scenario:** A customer service agent or an external API modifies a core CRM `CommSubscriptionConsent` record. This back-office shift must be forced upstream into the MC Next transactional framework.
 
 ```mermaid
 graph TD
     A[Trigger: CommSubConsent
-    Updated] --> B[Get Contact
-    for CommSubConsent]
-    B --> C{Decision: Check
-    Consent Status}
-    C -- Opt In --> D["Create Consent Action
+    Status Changed] --> B[Async After Commit]
+    B --> C[Get and Match CRM
+    Channel Type]
+    C --> D{Identify Email
+    or SMS}
+    D -- Email --> E[Get D360 Email
+    Channel Type]
+    D -- Mobile SMS --> F[Get D360 SMS
+    Channel Type]
+    E --> G[Get Latest D360 Consent by
+    Channel and Contact Point]
+    F --> H[Get Latest D360 Consent by
+    Channel and Contact Point]
+    G --> I{Compare CRM and
+    D360 Consent States}
+    I -- CRM Opt In and D360 Opt Out --> J["Create Consent Action
     Status: Opt In"]
-    C -- Opt Out --> E["Create Consent Action
+    I -- CRM Opt Out and D360 Opt In --> K["Create Consent Action
     Status: Opt Out"]
-    D --> F[MC Next Consent Updated]
-    E --> F
+    J --> L[MC Next Email
+    Consent Updated]
+    K --> L
+    H --> M{Compare CRM and
+    D360 Consent States}
+    M -- CRM Opt In and D360 Opt Out --> N["Create Consent Action
+    Status: Opt In"]
+    M -- CRM Opt Out and D360 Opt In --> O["Create Consent Action
+    Status: Opt Out"]
+    N --> P[MC Next SMS
+    Consent Updated]
+    O --> P
 ```
 
-* **Flow Type:** Automation Event-Triggered Flow (*Prospect, Lead, Contact or Related Record Change*)
+* **Flow Type:** Record-Triggered Flow with an asynchronous path
 * **Trigger Object:** Communication Subscription Consent (`CommSubscriptionConsent`)
-* **Trigger Condition:** A record is updated. Object anchor set to `Consent Giver ID (Contact)`.
+* **Trigger Condition:** A record is updated and `PrivacyConsentStatus` changes
 * **Logic Steps:**
-1. **Get Records (`Get Contact for CommsSubConsent`):** Query the CRM `Contact` record where `Contact ID` matches the triggering record's `Consent Giver ID`.
-2. **Decision (`Check Consent Status`):** Evaluate the value of the triggering CRM record’s `Privacy Consent Status` field.
-* *Branch A (Consent Given):* Value equals `Opt In`.
-* *Branch B (Consent Revoked):* Value equals `Opt Out`.
-3. **Action Branches:**
-* *Path A (Consent Given):* Execute the **Create Consent** action. Set *Consent Status* parameter to `Opt In`, map the target communication channel, and supply the designated email contact point value.
-* *Path B (Consent Revoked):* Execute the **Create Consent** action. Set the *Consent Status* parameter to `Opt Out`. This tells the underlying transactional engine to treat the contact point as suppressed, immediately preventing future campaign deployment.
-
-![Automation event-triggered flow start for CommSubscriptionConsent changes](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-start-automation-event-triggered-commsubconsent.png)
-
-![Get Contact for CommSubConsent configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-get-contact-for-commsubconsent.png)
-
-![Decision configuration for CRM consent status evaluation](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-check-consent-status.png)
-
-![Create consent in MC Next configuration](../../assets/blog/how-to-keep-consent-in-sync-between-salesforce-data-360-and-marketing-cloud-next/flow-3-create-consent-in-mc-next.png)
+1. **Get and Filter Channel Types:** Query all core CRM `CommSubscriptionChannelType` records, select the record whose ID matches the triggering consent's `CommSubscriptionChannelTypeId`, and inspect its name.
+2. **Decision (`Update D360 Consent for the Correct Channel Type`):** Route `Email` and `Mobile SMS` to their channel-specific paths.
+3. **Get Records (`Get D360 Channel Type`):** For email, query the Data 360 channel type whose name begins with `Marketing Email`. For SMS, use the equivalent `Marketing SMS` lookup.
+4. **Get Records (`Get D360 Consent State`):** Query the latest `ssot__CommunicationSubscriptionConsent__dlm` record matching the selected Data 360 channel type and the triggering CRM record's `ContactPointValue__c`.
+5. **Decision (`Update D360 Consent State`):** Compare CRM `OptIn` or `OptOut` with Data 360 `OPT_IN` or `OPT_OUT`. Invoke an action only when the states disagree.
+6. **Action Branches:**
+* *Path A (Consent Given):* For either email or SMS, execute the channel-specific **Create Consent** action with *Consent Status* set to `OptIn` and the triggering CRM record's `ContactPointValue__c`.
+* *Path B (Consent Revoked):* For either email or SMS, execute the channel-specific **Create Consent** action with *Consent Status* set to `OptOut`. This tells the underlying transactional engine to suppress the contact point immediately.
 
 ## Technical Summary Matrix
 
 | Flow Purpose | Flow Type | Starting Trigger Object | Core Action Element |
 | --- | --- | --- | --- |
-| **1. Net New Opt-In** | Data Cloud-Triggered | `ssot_Individual__dlm` (Created) | Native `Create Consent` (Action) |
-| **2. MC Next --> CRM** | Data Cloud-Triggered | `ssot_CommunicationSubscriptionConsent__dlm` (Updated) | Standard `Update Records` (CRM Core) |
-| **3. CRM --> MC Next** | Automation Event-Triggered | `CommSubscriptionConsent` (Updated) | Native `Create Consent` (Action) |
+| **1. New Registration Baseline** | Record-Triggered, Async | `Account` (Person Account Created) | Native `Create Consent` (Action) |
+| **2. MC Next --> CRM** | Data Cloud-Triggered | `ssot__CommunicationSubscriptionConsent__dlm` (Status Updated) | Standard `Update Records` (CRM Core) |
+| **3. CRM --> MC Next** | Record-Triggered, Async | `CommSubscriptionConsent` (Status Updated) | Native `Create Consent` (Action) |
 
 ## Architect's Takeaway
 
